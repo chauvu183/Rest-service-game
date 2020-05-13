@@ -1,5 +1,6 @@
 package hawhamburg;
 
+import hawhamburg.model.User;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
@@ -13,9 +14,8 @@ public class RestHelper {
 		return body;
 	}
 
-	public void login(String name, String password) {
-		JsonNode body = Unirest.get(baseUrl + "/login").basicAuth(name, password).asJson().getBody();
-		System.out.println(body);
+	public void login(User newUser) {
+		JsonNode body = Unirest.get(baseUrl + "/login").basicAuth(newUser.name, newUser.password).asJson().getBody();
 		String token = body.getObject().getString("token");
 		System.out.println("this is parsed token: " + token);
 		RestHelper.token = token;
@@ -26,4 +26,12 @@ public class RestHelper {
 		System.out.println(node);
 		return node;
 	}
+
+	public JsonNode sendPut(String url,String data) {
+		JsonNode node = Unirest.put(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson().getBody();
+		System.out.println(node);
+		return node;
+	}
+
+
 }
