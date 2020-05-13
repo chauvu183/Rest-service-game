@@ -4,8 +4,12 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 
+import com.google.gson.JsonObject;
+import hawhamburg.model.Delivery;
+import hawhamburg.model.Link;
 import hawhamburg.model.Task;
 import kong.unirest.JsonNode;
+import kong.unirest.json.JSONObject;
 
 
 public class Start {
@@ -18,20 +22,23 @@ public class Start {
 		h1.baseUrl = "http://172.27.0.6:5000";
 		String data = "{\"name\":\"userD\",\"password\":\"abc123\"}";
 		
-		h1.sendPost("/users", data);
-		
+		//h1.sendPost("/users", data);
+        System.out.print("Start from here, login in new user\n");
 		h1.login("userD", "abc123");
 		
 		h1.sendGet("/whoami");
-		
+        System.out.print("get all the quests\n");
 		h1.sendGet("/blackboard/quests");
-		
+
+        System.out.print("Get Quest 1\n");
 		JsonNode firstQuest = h1.sendGet("/blackboard/quests/1");
+        System.out.println("Get TaskUrl\n");
 		String tasksUrl = firstQuest.getObject().getJSONObject("object").getJSONObject("_links").getString("tasks");
+
 		JsonNode tasks = h1.sendGet(tasksUrl);
 		
 		String taskString = tasks.getObject().getJSONArray("objects").getJSONObject(0).toString();
-		
+        System.out.println("Get location\n");
 		Task task = gson.fromJson(taskString, Task.class);
 				System.out.println(task);
 		JsonNode location = h1.sendGet(task.location);
@@ -40,11 +47,23 @@ public class Start {
 		
 		RestHelper h2 = new RestHelper();
 		h2.baseUrl = "http://"+host;
-		JsonNode visits = h2.sendGet("/visits");
-		JsonNode postVisits = h2.sendPost("/visits", "\n");
-		
+		JsonNode visits = h2.sendGet(task.resource);
+		JsonNode postVisits = h2.sendPost(task.resource, "\n");
+        System.out.print("Get token to resolve the first quest\n");
 		String token = postVisits.getObject().getString("token");
 		// TODO send to delivery {"taskUrl":"", Token:token}
+        // get all the necessary links in the blackboard to execute the delivery
+        JSONObject allUrlObject = firstQuest.getObject().getJSONObject("object").getJSONObject("_links");
+
+        Link link = gson.fromJson(String.valueOf(allUrlObject),Link.class);
+
+        System.out.println("link");
+        System.out.println(link);
+        // {"tokens":{""+link.self+"":"token"}}
+        String inputData = "{\"tokens\":{\""+link.self+"\":\""+token+"\"}}";
+        h1.sendPost(link.deliveries,inputData);
+
+
 	}
 
 }
