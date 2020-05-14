@@ -2,8 +2,10 @@ package hawhamburg.model;
 
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
+
 public class Task {
-	public JsonObject _link;
+	public JsonObject _links;
 	public int[] deliverables;
 	public String description;
 	public int id;
@@ -13,18 +15,33 @@ public class Task {
 	public int required_players;
 	public String resource;
 
-	public String getlink() {
+	public JsonObject getlink() {
+		return _links;
+	}
 
-		return null;
+	public String getDescription() {
+		return description;
+	}
+
+	public String getResource() {
+		return resource;
+	}
+
+	public String getLocation() {
+		return location;
 	}
 
 	@Override
 	public String toString() {
 		return "Task{" +
-				"self='" + _link + '\'' +
+				"_link=" + _links +
+				", deliverables=" + Arrays.toString(deliverables) +
+				", description='" + description + '\'' +
+				", id=" + id +
 				", location='" + location + '\'' +
 				", name='" + name + '\'' +
 				", quest=" + quest +
+				", required_players=" + required_players +
 				", resource='" + resource + '\'' +
 				'}';
 	}

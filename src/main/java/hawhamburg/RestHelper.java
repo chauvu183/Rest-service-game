@@ -10,9 +10,20 @@ public class RestHelper {
 	public static String token;
 
 	public JsonNode sendPost(String url, String data) {
-		HttpRequestWithBody request = Unirest.post(baseUrl + url);
-		JsonNode body = request.header("Authorization", "Token " + token).body(data).asJson().getBody();
-		System.out.println(body);
+		HttpResponse<JsonNode> request = Unirest.post(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson();
+		JsonNode body = request.getBody();
+		request.ifSuccess(response -> {
+			//String token = body.getObject().getString("token");
+		//	System.out.println(body);
+		}).ifFailure(response ->{
+			System.out.println("Oh No! Status" + response.getStatus());
+			String message = body.getObject().getString("message");
+			System.out.println(message);
+			response.getParsingError().ifPresent(e -> {
+				System.out.println("Parsing Exception: " + e);
+				System.out.println("Original body: " + e.getOriginalBody());
+			});
+		});
 		return body;
 	}
 
@@ -22,7 +33,6 @@ public class RestHelper {
 		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
 			String token = body.getObject().getString("token");
-			System.out.println("this is parsed token: " + token);
 			RestHelper.token = token;
 		}).ifFailure(response ->{
 			isValid[0] = false;
@@ -38,9 +48,21 @@ public class RestHelper {
 	}
 
 	public JsonNode sendGet(String url) {
-		JsonNode node = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson().getBody();
-		System.out.println(node);
-		return node;
+		HttpResponse<JsonNode> request = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson();
+		JsonNode body = request.getBody();
+		request.ifSuccess(response -> {
+			//String token = body.getObject().getString("token");
+			//System.out.println(body);
+		}).ifFailure(response ->{
+			System.out.println("Oh No! Status" + response.getStatus());
+			String message = body.getObject().getString("message");
+			System.out.println(message);
+			response.getParsingError().ifPresent(e -> {
+				System.out.println("Parsing Exception: " + e);
+				System.out.println("Original body: " + e.getOriginalBody());
+			});
+		});
+		return body;
 	}
 
 	public JsonNode sendPut(String url,String data) {
