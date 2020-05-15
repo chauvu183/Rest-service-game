@@ -213,16 +213,15 @@ public class Game {
     }
     void solveFirstTask(JsonNode postVisits){
         String token = postVisits.getObject().getString("token");
-        System.out.println("This is your Token : "+ token);
-        System.out.println("\n Use this Token to confirm you have resolve the quests");
-        System.out.println("\n Continue?");
+        System.out.println(" This is your Token : "+ token);
+        System.out.println("\n Use this Token to confirm you have resolved the quests");
+        System.out.println("\n Confirmed?");
         getUserInput();
         String taskUrl = firstTask.getlink().get("self").toString();
         String inputData = "{\"tokens\":{"+ taskUrl +":\""+token+"\"}}";
         //get the correct url /blackboard/tasks/1
         JsonNode result = restHelperBlackboard.sendPost(link.deliveries,inputData);
         String status = result.getObject().getString("status");
-        System.out.println(status);
         if(status.equals("success")){
             System.out.println(" _____                             _          __   __            _                     \n" +
                     "/  __ \\                           | |         \\ \\ / /           | |                    \n" +
