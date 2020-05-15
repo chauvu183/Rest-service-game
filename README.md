@@ -1,4 +1,4 @@
-# vs-clientServer
+# **VS-ClientServer**
 
 A simple ClientServer to execute Request from Blackboard Server
 
@@ -104,4 +104,3 @@ Class Game is the core of this Aventure World.
 
 * [UniRest](http://kong.github.io/unirest-java/) - The RESTApi framework used
 * [Maven](https://maven.apache.org/) - Dependency Management
-*
