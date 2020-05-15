@@ -7,7 +7,7 @@ A simple ClientServer to execute Request from Blackboard Server
 These instructions will get you an idea of the project and running on your local machine for development and testing purposes.
 
 ### Prerequisites
-You have to connect with the blackboard Server with OpenVPN or through SSH (Suggestion is OpenVPN is flexibler)
+You have to connect with the blackboard Server with OpenVPN or through SSH (Suggestion is OpenVPN)
 
 ### Installing
 
@@ -96,8 +96,8 @@ Go and kill some rats
 
 ## Deployment
 
-Class RestHelper will execute all the HTTP Methods for RESTful Services (GET,POST,PUT,DELETE)
-Class Game is the core of this Aventure World. 
+* Class RestHelper will execute all the HTTP Methods for RESTful Services (GET,POST,PUT,DELETE)
+* Class Game is the core of this Aventure World. 
 
 
 ## Built With
