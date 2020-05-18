@@ -2,16 +2,8 @@ package hawhamburg;
 
 import java.io.IOException;
 
-import com.google.gson.Gson;
-
-import com.google.gson.JsonObject;
 import hawhamburg.app.Game;
-import hawhamburg.model.Delivery;
-import hawhamburg.model.Link;
-import hawhamburg.model.Task;
-import hawhamburg.model.User;
-import kong.unirest.JsonNode;
-import kong.unirest.json.JSONObject;
+import hawhamburg.app.MessageService;
 
 
 public class Start {
@@ -19,6 +11,8 @@ public class Start {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Game game = new Game();
 		game.startGame();
+		
+		
 /*		// TODO Auto-generated method stub
 		Gson gson = new Gson();
 		RestHelper h1 = new RestHelper();

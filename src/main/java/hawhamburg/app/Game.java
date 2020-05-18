@@ -1,14 +1,18 @@
 package hawhamburg.app;
 
+import java.util.Iterator;
+import java.util.Scanner;
+
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
 import hawhamburg.RestHelper;
 import hawhamburg.model.Link;
 import hawhamburg.model.Quest;
 import hawhamburg.model.Task;
 import hawhamburg.model.User;
 import kong.unirest.JsonNode;
-import java.util.Scanner;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 
 public class Game {
     private static final String ANSI_RESET  = "\u001B[0m";
@@ -28,9 +32,10 @@ public class Game {
     Quest quest;
     Link link;
     Task firstTask;
-
+    MessageService ms;
 
     public void startGame(){
+    	ms = new MessageService();
         intro();
         restHelperBlackboard.baseUrl = blackboardServer;
 
@@ -47,6 +52,7 @@ public class Game {
                 System.out.print("\nSuch an outlandish name dear " + name);
                 System.out.print("\nYou are fully cloaked and we want to know your secret code?\n ");
                 String password = userInput.next();
+                ms.username = name;
                 user = new User(name, password);
                 //register as new User
                 String registerNewUser = register(user);
@@ -80,6 +86,7 @@ public class Game {
                 System.out.print("\nPlease enter your adventure secret code\n");
                 String loginPassword = userInput.next();
                 user = new User(loginName,loginPassword);
+                ms.username = loginName;
                 boolean isValid = login(user);
                 int i = 0;
                 while (i < 3 && !isValid) {
@@ -187,6 +194,19 @@ public class Game {
             h2.baseUrl = "http://"+host;
             JsonNode visits = h2.sendGet(firstTask.resource);
             System.out.println("\n "+visits.getObject().getString("message"));
+//            String nextVisit = visits.getObject().getString("next");
+//            JsonNode visitRats = h2.sendGet(nextVisit);
+//            JSONArray stepsTodo = visitRats.getObject().getJSONArray("steps_todo");
+//            Iterator<Object> ir = stepsTodo.iterator();
+//            while (ir.hasNext()) {
+//            	Object next = ir.next();
+//            	if (next instanceof String) {
+//            		String nextRat = (String)next;
+//            		h2.sendGet(nextRat);
+//            		h2.sendPost(nextRat, "");
+//            	}
+//            }
+            
             System.out.println("Do you want to do this?"
                     +"\n Enter 'y' to solve it"
                     +"\n Press 'q' to exit game ");
