@@ -1,30 +1,41 @@
 package hawhamburg;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
-import hawhamburg.app.Game;
-import hawhamburg.app.MessageService;
+import hawhamburg.controller.Game;
+import hawhamburg.service.MessageService;
+import hawhamburg.model.User;
 
 
 public class Start {
+	static MessageService messageService;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Game game = new Game();
 		game.startGame();
-		
-		
-/*		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		RestHelper h1 = new RestHelper();
 
-		h1.baseUrl = "http://172.27.0.6:5000";
-		String data = "{\"name\":\"userD\",\"password\":\"abc123\"}";
+		//messageService = new MessageService();
+		
+		
+		// TODO Auto-generated method stub
+		//Gson gson = new Gson();
+		//RestHelper h1 = new RestHelper();
+
+		//h1.baseUrl = "http://172.27.0.6:5000";
+		//String data = "{\"name\":\"userD\",\"password\":\"abc123\"}";
 
 		//h1.sendPost("/users", data);
-        System.out.print("Start from here, login in new user\n");
-		h1.login(new User("userD", "abc123"));
+       // System.out.print("Start from here, login in new user\n");
+		//h1.login(new User("userD", "abc123"));
 
-		h1.sendGet("/whoami");
+		//JsonNode adventurerList = h1.sendGet("/taverna/adventurers");
+		String contactIP = InetAddress.getLocalHost().getHostAddress();
+		System.out.println(contactIP);
+		//MessageService ms = new MessageService();
+		//ms.username = "userD";
+
+		/*h1.sendGet("/whoami");
         System.out.print("get all the quests\n");
 		h1.sendGet("/blackboard/quests");
 

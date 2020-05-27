@@ -1,6 +1,5 @@
-package hawhamburg.app;
+package hawhamburg.controller;
 
-import java.util.Iterator;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
@@ -11,8 +10,6 @@ import hawhamburg.model.Quest;
 import hawhamburg.model.Task;
 import hawhamburg.model.User;
 import kong.unirest.JsonNode;
-import kong.unirest.json.JSONArray;
-import kong.unirest.json.JSONObject;
 
 public class Game {
     private static final String ANSI_RESET  = "\u001B[0m";
@@ -32,10 +29,10 @@ public class Game {
     Quest quest;
     Link link;
     Task firstTask;
-    MessageService ms;
+    //MessageService ms;
 
     public void startGame(){
-    	ms = new MessageService();
+    	//ms = new MessageService();
         intro();
         restHelperBlackboard.baseUrl = blackboardServer;
 
@@ -52,7 +49,7 @@ public class Game {
                 System.out.print("\nSuch an outlandish name dear " + name);
                 System.out.print("\nYou are fully cloaked and we want to know your secret code?\n ");
                 String password = userInput.next();
-                ms.username = name;
+                //ms.username = name;
                 user = new User(name, password);
                 //register as new User
                 String registerNewUser = register(user);
@@ -86,7 +83,7 @@ public class Game {
                 System.out.print("\nPlease enter your adventure secret code\n");
                 String loginPassword = userInput.next();
                 user = new User(loginName,loginPassword);
-                ms.username = loginName;
+                //ms.username = loginName;
                 boolean isValid = login(user);
                 int i = 0;
                 while (i < 3 && !isValid) {
@@ -107,7 +104,10 @@ public class Game {
 
             }break;
             case 3:{
-                //TODO Exit
+                //TODO register to Tavern Server and Message Server
+            }
+            case 4:{
+
                endGame();
             }break;
         }
@@ -158,7 +158,6 @@ public class Game {
         //See the quests
         if(continuing) getQuest();
         else endGame();
-
     }
 
     void getQuest(){
@@ -194,6 +193,8 @@ public class Game {
             h2.baseUrl = "http://"+host;
             JsonNode visits = h2.sendGet(firstTask.resource);
             System.out.println("\n "+visits.getObject().getString("message"));
+
+            //TODO create method to solve all the Quest
 //            String nextVisit = visits.getObject().getString("next");
 //            JsonNode visitRats = h2.sendGet(nextVisit);
 //            JSONArray stepsTodo = visitRats.getObject().getJSONArray("steps_todo");
@@ -213,6 +214,7 @@ public class Game {
             getUserInput();
             if(continuing){
                 JsonNode postVisits = h2.sendPost(firstTask.resource, "\n");
+                System.out.println(firstTask.resource);
                 System.out.print("Get token to resolve the first quest\n");
                 System.out.println(" Write 't' to get the Token to solve quest");
                 char answer3 = userInput.next().charAt(0);
@@ -262,6 +264,9 @@ public class Game {
         }
        }
 
+    void solveOtherTask(){
+
+    }
 
     void getUserInput(){
         char answer = userInput.next().charAt(0);
@@ -278,9 +283,6 @@ public class Game {
 
     void userInformation(User user){
         JsonNode request = restHelperBlackboard.sendGet("/users/"+ user.name);
-        //String tasksUrl = firstQuest.getObject().getJSONObject("object").getJSONObject("_links").getString("tasks");
-        //Task task = gson.fromJson(taskString, Task.class);
-        //				System.out.println(task);
          String userObject = request.getObject().getJSONObject("object").toString();
 
          User userData = gson.fromJson(userObject, User.class);

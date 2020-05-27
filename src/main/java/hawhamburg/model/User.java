@@ -3,9 +3,10 @@ package hawhamburg.model;
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class User {
-
+    private String userId;
     public String name;
     public String password;
     public JsonObject _links;
@@ -18,6 +19,11 @@ public class User {
         this.name = name;
         this.password = password;
     }
+
+    public static User generateUser(String username, String password) {
+        return new User(username, password);
+    }
+
     public String getName() {
         return name;
     }
@@ -26,6 +32,9 @@ public class User {
         return password;
     }
 
+    public String getUserId() {
+        return userId;
+    }
 
     @Override
     public String toString() {
