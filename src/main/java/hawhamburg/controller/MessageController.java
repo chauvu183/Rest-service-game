@@ -1,10 +1,10 @@
 package hawhamburg.controller;
 
+import hawhamburg.model.CommunicationParticipant;
 import hawhamburg.model.Message;
-import hawhamburg.response.TravernInfoResponse;
-import hawhamburg.model.User;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessageController {
 
     private static MessageController instance;
-    ConcurrentHashMap<String,User> users = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, CommunicationParticipant> participantMap = new ConcurrentHashMap<>();
     private Map<String,String> enteredUsers = new ConcurrentHashMap<>();
 
     // holds the authToken for a specific user
@@ -50,13 +50,22 @@ public class MessageController {
         }
     }
 
-    public List<TravernInfoResponse> getAllUserContact() throws Exception {
-        // TODO give all the User contact
-        return null;
+    public void addParticipant(CommunicationParticipant adventurer){
+        if(adventurer != null){
+            participantMap.put(adventurer.getId(),adventurer);
+        }
     }
 
-    public TravernInfoResponse getUsesrContact() throws Exception{
-        return null;
+    public Collection<CommunicationParticipant> getAllParticipant() throws Exception {
+        return participantMap.values();
+    }
+
+    public CommunicationParticipant getParticipant(String id) throws Exception{
+        return participantMap.get(id);
+    }
+
+    public void deleteAdventurer(String id){
+        participantMap.remove(id);
     }
 
 

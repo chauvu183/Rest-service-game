@@ -1,15 +1,23 @@
-package hawhamburg.response;
+package hawhamburg.model;
 
-public class CommunicationServiceResponse {
+import java.util.UUID;
+
+public class CommunicationParticipant {
 	public String user;
 	public boolean idle;
 	public String group;
 	public String hirings;
 	public String assignments;
 	public String messages;
+	private String id;
 
-	public CommunicationServiceResponse() {
+	public CommunicationParticipant() {
+		this.id = UUID.randomUUID().toString();
 		this.idle = false;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public void setUser(String user) {

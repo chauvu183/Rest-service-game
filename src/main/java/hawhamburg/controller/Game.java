@@ -1,14 +1,13 @@
 package hawhamburg.controller;
 
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
 
 import hawhamburg.RestHelper;
-import hawhamburg.model.Link;
-import hawhamburg.model.Quest;
-import hawhamburg.model.Task;
-import hawhamburg.model.User;
+import hawhamburg.model.*;
+import hawhamburg.service.MessageService;
 import kong.unirest.JsonNode;
 
 public class Game {
@@ -21,6 +20,7 @@ public class Game {
     public static Scanner userInput = new Scanner((System.in));
     public static boolean continuing = true;
     private static final String blackboardServer = "http://172.27.0.6:5000";
+    private MessageService messageService;
 
     Gson gson = new Gson();
     RestHelper restHelperBlackboard = new RestHelper();
@@ -30,6 +30,12 @@ public class Game {
     Link link;
     Task firstTask;
     //MessageService ms;
+
+
+    public Game() throws UnknownHostException {
+        messageService = new MessageService();
+        startGame();
+    }
 
     public void startGame(){
     	//ms = new MessageService();
@@ -63,14 +69,13 @@ public class Game {
                     user = new User(newName, newPassword);
                     registerNewUser = register(user);
                     System.out.println(registerNewUser);
-                };
+                }
                 System.out.print("\nNice done! Welcome to Adventure World! \n");
                 userInput.reset();
                 login(user);
                 play();
             }break;
             case'2':{
-                //TODO login to account
                 System.out.println( "============================================================================================= \n" );
                 System.out.println("__      __   _                    _____     __   __                _      _             _                \n" +
                         "\\ \\    / /__| |__ ___ _ __  ___  |_   _|__  \\ \\ / /__ _  _ _ _    /_\\  __| |_ _____ _ _| |_ _  _ _ _ ___ \n" +
@@ -104,10 +109,6 @@ public class Game {
 
             }break;
             case 3:{
-                //TODO register to Tavern Server and Message Server
-            }
-            case 4:{
-
                endGame();
             }break;
         }
@@ -133,8 +134,7 @@ public class Game {
     private String register(User user){
         String userData = "{\"name\":\""+ user.name + "\",\"password\":\""+user.password+"\"}";
         JsonNode response = restHelperBlackboard.sendPost("/users",userData);
-        String message = response.getObject().getString("message");
-        return message;
+        return response.getObject().getString("message");
     }
 
     boolean login(User user){
@@ -149,15 +149,48 @@ public class Game {
                 " \\_/\\___/ \\__,_|_|    \\/    \\/_|___/___/_|\\___/|_| |_|" +
                 "                                                              ");
         System.out.println("===========================================================\n");
-        System.out.println(" To earn your sporns you have to fulfill quests.\n" +
-                " Those quests require you to accept a quest,\nand then visit the location in question to do your deed.\n" +
-                " But start slowly, see which quests are available \n" +
-                " and list them so you can choose which quest to attend.");
-        System.out.println("\n Do you want to fullfil those quests?\nPress 'y' to continue or 'q' to exit game");
-        getUserInput();
-        //See the quests
-        if(continuing) getQuest();
-        else endGame();
+        //choose which task to do (register at tavern or solve the quest or quit)
+
+        System.out.println("Welcome, which tasks do you want to perform ?\n");
+        System.out.println(" You must choose...");
+        System.out.println("\t1) Solve the Quests");
+        System.out.println("\t2) Enter Tavern, where all the heros gather");
+        System.out.println("\t3) Exit");
+        playerChoice = ' ';
+        while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3') {
+            playerChoice = userInput.next().charAt(0);
+            if(playerChoice != '1' && playerChoice != '2' && playerChoice != '3')
+                System.out.println("\nPlease enter '1', '2' or '3'");
+        }
+
+        switch(playerChoice){
+            case '1':{
+                //Solve Quest
+                System.out.println(" To earn your sporns you have to fulfill quests.\n" +
+                        " Those quests require you to accept a quest,\nand then visit the location in question to do your deed.\n" +
+                        " But start slowly, see which quests are available \n" +
+                        " and list them so you can choose which quest to attend.");
+                System.out.println("\n Do you want to fullfil those quests?\nPress 'y' to continue or 'q' to exit game");
+                getUserInput();
+                //See the quests
+                if(continuing) getQuest();
+                else endGame();
+            } break;
+            case '2':{
+                userInput.reset();
+                //Register at Tavern
+                System.out.println("Welcome to Tavern, where you can communicate with other heros\n");
+                System.out.println("Firstly please subscribe yourself with a Hero class");
+                System.out.println("Which hero class do you want to register?\n");
+                String heroclass = userInput.next();
+                System.out.println("Nice done!");
+                enterTavern(heroclass);
+            }break;
+            case '3':{
+                endGame();
+            }break;
+        }
+
     }
 
     void getQuest(){
@@ -182,7 +215,7 @@ public class Game {
         while(answer2 != 'm' && answer2 != 'q'){
             System.out.println("\n Please enter again");
             answer2 = userInput.next().charAt(0);
-        };
+        }
         if (answer2 == 'q') continuing = false;
         if(continuing){
             //see the location
@@ -226,7 +259,7 @@ public class Game {
                     }
                 }
                 solveFirstTask(postVisits);
-            };
+            }
         }else{
             endGame();
         }
@@ -268,12 +301,22 @@ public class Game {
 
     }
 
+    void enterTavern(String heroclass){
+        String userURL = "/adventures/contact/"+ user.getName();
+        String data =  "{\"heroclass\":\""+ heroclass + "\",\"url\":\""+userURL+"\"}";
+        JsonNode request = restHelperBlackboard.sendPost("/taverna/adventurers",data);
+        String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
+        System.out.println(nodeString);
+        Adventurer adventurer = gson.fromJson(nodeString, Adventurer.class);
+        System.out.println(adventurer);
+    }
+
     void getUserInput(){
         char answer = userInput.next().charAt(0);
         while(answer != 'y' && answer != 'q'){
             System.out.println("\n Please enter again");
             answer = userInput.next().charAt(0);
-        };
+        }
         if (answer == 'q') continuing = false;
     }
 

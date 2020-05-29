@@ -2,7 +2,7 @@ package hawhamburg.service;
 
 import com.google.gson.Gson;
 import hawhamburg.controller.MessageController;
-import hawhamburg.response.CommunicationServiceResponse;
+import hawhamburg.model.CommunicationParticipant;
 import hawhamburg.model.User;
 import hawhamburg.requests.SendMessageRequest;
 import hawhamburg.response.StandardResponse;
@@ -27,7 +27,7 @@ public class MessageService {
     }
 
     public void registerServices() {
-        post("/api/send/:userId", (req, res) -> {
+        post("/adventure/send/:userId", (req, res) -> {
             //TODO request
             String body = req.body();
             String goalUserId = req.params(":userId");
@@ -39,10 +39,22 @@ public class MessageService {
             return "message sent";
         });
 
-        get("/api/contact/:name",(req, res) ->{
+        post("/adventures", (request, response) -> {
+            response.type("application/json");
+            CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
+            messageController.addParticipant(adventurer);
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+        });
+
+        get("/adventures",(req,res)->{
+            res.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getAllParticipant())));
+        });
+
+        get("/adventures/contact/:name",(req, res) ->{
             try{
                 String userName = req.params(":name");
-                CommunicationServiceResponse csr = new CommunicationServiceResponse();
+                CommunicationParticipant csr = new CommunicationParticipant();
                 csr.setUser(baseURL + "/users/" + userName);
                 csr.setGroup("");
                 csr.setHirings(localURL+ "/api/hirings/" +userName);

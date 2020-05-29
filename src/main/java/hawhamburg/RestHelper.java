@@ -10,10 +10,8 @@ public class RestHelper {
 	public static String token;
 
 	public JsonNode sendPost(String url, String data) {
-		System.out.println("sending post request to: " + baseUrl + url);
 		HttpResponse<JsonNode> request = Unirest.post(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson();
 		JsonNode body = request.getBody();
-		System.out.println(body);
 		request.ifSuccess(response -> {
 			//String token = body.getObject().getString("token");
 		//	System.out.println(body);

@@ -11,9 +11,9 @@ import hawhamburg.model.User;
 public class Start {
 	static MessageService messageService;
 
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException {
 		Game game = new Game();
-		game.startGame();
+		//game.startGame();
 
 		//messageService = new MessageService();
 		
