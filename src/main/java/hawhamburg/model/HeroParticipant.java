@@ -2,7 +2,7 @@ package hawhamburg.model;
 
 import java.util.UUID;
 
-public class CommunicationParticipant {
+public class HeroParticipant {
 	public String user;
 	public boolean idle;
 	public String group;
@@ -12,7 +12,7 @@ public class CommunicationParticipant {
 	private double id;
 	private String userName;
 
-	public CommunicationParticipant(String userName) {
+	public HeroParticipant(String userName) {
 		this.user = "http://172.27.0.6:5000/users/" + userName;
 		this.id = Math.random();
 		this.idle = false;

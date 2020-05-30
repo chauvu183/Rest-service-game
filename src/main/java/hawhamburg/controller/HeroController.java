@@ -1,6 +1,6 @@
 package hawhamburg.controller;
 
-import hawhamburg.model.CommunicationParticipant;
+import hawhamburg.model.HeroParticipant;
 import hawhamburg.model.Message;
 
 import java.util.ArrayList;
@@ -9,22 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MessageController {
+public class HeroController {
 
-    private static MessageController instance;
-    ConcurrentHashMap<Double, CommunicationParticipant> participantMap = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, CommunicationParticipant> participantMapWithName = new ConcurrentHashMap<>();
+    private static HeroController instance;
+    ConcurrentHashMap<Double, HeroParticipant> participantMap = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, HeroParticipant> participantMapWithName = new ConcurrentHashMap<>();
     private Map<String,String> enteredUsers = new ConcurrentHashMap<>();
 
     // holds the authToken for a specific user
     private ConcurrentHashMap<String, List<Message>> messagesMap = new ConcurrentHashMap<>();
-    private MessageController() {
+    private HeroController() {
 
     }
 
-    public synchronized static MessageController getInstance() {
+    public synchronized static HeroController getInstance() {
         if (instance == null) {
-            instance = new MessageController();
+            instance = new HeroController();
         }
         return instance;
     }
@@ -51,28 +51,28 @@ public class MessageController {
         }
     }
 
-    public void addParticipant(CommunicationParticipant adventurer){
+    public void addParticipant(HeroParticipant adventurer){
         if(adventurer != null){
             participantMap.put(adventurer.getId(),adventurer);
         }
     }
 
-    public void addParticipantByName(CommunicationParticipant adventurer){
+    public void addParticipantByName(HeroParticipant adventurer){
         if(adventurer != null){
             participantMapWithName.put(adventurer.getUserName(),adventurer);
         }
     }
 
 
-    public Collection<CommunicationParticipant> getAllParticipant() throws Exception {
+    public Collection<HeroParticipant> getAllParticipant() throws Exception {
         return participantMap.values();
     }
 
-    public CommunicationParticipant getParticipant(String id) throws Exception{
+    public HeroParticipant getParticipant(String id) throws Exception{
         return participantMap.get(id);
     }
 
-    public CommunicationParticipant getParticipantByName(String name) throws Exception{
+    public HeroParticipant getParticipantByName(String name) throws Exception{
         System.out.println(participantMapWithName);
         return participantMapWithName.get(name);
     }

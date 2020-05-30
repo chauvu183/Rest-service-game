@@ -2,8 +2,8 @@ package hawhamburg.service;
 
 import com.google.gson.Gson;
 import hawhamburg.controller.HiringController;
-import hawhamburg.controller.MessageController;
-import hawhamburg.model.CommunicationParticipant;
+import hawhamburg.controller.HeroController;
+import hawhamburg.model.HeroParticipant;
 import hawhamburg.model.Hiring;
 import hawhamburg.model.User;
 import hawhamburg.requests.SendMessageRequest;
@@ -17,17 +17,18 @@ import java.net.UnknownHostException;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
-public class MessageService {
+public class HeroService {
     private Gson gson = new Gson();
-    private MessageController messageController;
+    private HeroController heroController;
     private HiringController hiringController;
 
     private User user;
     private String baseURL = "http://172.27.0.6:5000";
     private String localURL = InetAddress.getLocalHost().getHostAddress();
 
-    public MessageService() throws UnknownHostException {
-        this.messageController = MessageController.getInstance();
+    public HeroService() throws UnknownHostException {
+        this.heroController = HeroController.getInstance();
+        this.hiringController = HiringController.getInstance();
         registerServices();
     }
 
@@ -39,7 +40,7 @@ public class MessageService {
 
             SendMessageRequest request = gson.fromJson(body, SendMessageRequest.class);
             //request.getMessage().setSenderId(myUserId);
-            messageController.sendMessage(goalUserId, request.getMessage());
+            heroController.sendMessage(goalUserId, request.getMessage());
 
             return "message sent";
         });
@@ -48,15 +49,15 @@ public class MessageService {
             response.type("application/json");
             String name=(new JSONObject(request.body())).getString("name");
            // CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
-            CommunicationParticipant adventurer = new CommunicationParticipant(name);
-            messageController.addParticipant(adventurer);
-            messageController.addParticipantByName(adventurer);
+            HeroParticipant adventurer = new HeroParticipant(name);
+            heroController.addParticipant(adventurer);
+            heroController.addParticipantByName(adventurer);
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
         get("/adventures",(req,res)->{
             res.type("application/json");
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getAllParticipant())));
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(heroController.getAllParticipant())));
         });
 
       /*  get("/adventures/:id", (request, response) -> {
@@ -67,7 +68,7 @@ public class MessageService {
 
         get("/adventures/:userName", (request, response) -> {
             response.type("application/json");
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getParticipantByName(request.params(":userName")))));
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(heroController.getParticipantByName(request.params(":userName")))));
         });
 
 
@@ -76,7 +77,7 @@ public class MessageService {
         get("/adventures/contact/:name",(req, res) ->{
             try{
                 String userName = req.params(":name");
-                CommunicationParticipant csr = new CommunicationParticipant(userName);
+                HeroParticipant csr = new HeroParticipant(userName);
                 res.type("application/json");
                 return new Gson().toJson(
                         new StandardResponse(StatusResponse.SUCCESS,new Gson()
@@ -91,9 +92,14 @@ public class MessageService {
         post("/adventures/hirings",((request, response) -> {
             response.type("application/json");
             Hiring hiring = new Gson().fromJson(request.body(), Hiring.class);
-
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
-
+            System.out.println(hiring);
+            if(hiring.getGroup()!= null){
+                System.out.println("here");
+                hiringController.handleHiring(hiring);
+                return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+            }else{
+                return new Gson().toJson(new StandardResponse(StatusResponse.ERROR, new Gson().toJson(hiring.getMessage())));
+            }
         }));
 
     }

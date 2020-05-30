@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 
 import hawhamburg.RestHelper;
 import hawhamburg.model.*;
-import hawhamburg.service.MessageService;
+import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
 
 public class Game {
@@ -20,7 +20,7 @@ public class Game {
     public static Scanner userInput = new Scanner((System.in));
     public static boolean continuing = true;
     private static final String blackboardServer = "http://172.27.0.6:5000";
-    private MessageService messageService;
+    private HeroService heroService;
     private String messageServerURL = "localhost:4567";
 
     Gson gson = new Gson();
@@ -35,7 +35,7 @@ public class Game {
 
 
     public Game() throws UnknownHostException {
-        messageService = new MessageService();
+        heroService = new HeroService();
         startGame();
     }
 
@@ -133,6 +133,7 @@ public class Game {
         System.out.println("\t2) Continue - Login to your World");
         System.out.println("\t3) Exit");
     }
+
     private String register(User user){
         String userData = "{\"name\":\""+ user.name + "\",\"password\":\""+user.password+"\"}";
         JsonNode response = restHelperBlackboard.sendPost("/users",userData);

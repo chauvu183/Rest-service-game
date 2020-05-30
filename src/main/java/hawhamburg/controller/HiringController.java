@@ -1,19 +1,17 @@
 package hawhamburg.controller;
-import hawhamburg.model.CommunicationParticipant;
+import hawhamburg.RestHelper;
 import hawhamburg.model.Hiring;
-import hawhamburg.model.Message;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HiringController {
     private static HiringController instance;
+    private static final String blackboardURL = "http://172.27.0.6:5000";;
+    private RestHelper restHelper = new RestHelper();
 
      private ConcurrentHashMap<String, Hiring> enteredUsers = new ConcurrentHashMap<>();
      private HiringController() {
+         restHelper.baseUrl = blackboardURL;
     }
 
     public synchronized static HiringController getInstance() {
@@ -24,10 +22,15 @@ public class HiringController {
     }
 
 
-    public void handleHiring(){
+    public void handleHiring(Hiring hiring){
          // TODO if the player give the group URL -> register member in this group
+            if(hiring.getGroup()!= null){
+                //register als a new member in
+                restHelper.sendPost(hiring.getGroup(),"\n");
+            }else{
+                //TODO Else if he didn't give anything -> response with a message?
+            }
 
-        //TODO Else if he didn't give anything -> response with a message?
 
 
     }

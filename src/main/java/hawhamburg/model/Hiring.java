@@ -2,18 +2,27 @@ package hawhamburg.model;
 
 public class Hiring {
     private String group;
-    private String quest;
+    private int quest;
     private String message;
 
     public String getGroup() {
         return group;
     }
 
-    public String getQuest() {
+    public int getQuest() {
         return quest;
     }
 
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return "Hiring{" +
+                "group='" + group + '\'' +
+                ", quest=" + quest +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

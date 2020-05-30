@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import hawhamburg.controller.Game;
-import hawhamburg.service.MessageService;
-import hawhamburg.model.User;
+import hawhamburg.service.HeroService;
 
 
 public class Start {
-	static MessageService messageService;
+	static HeroService heroService;
 
 	public static void main(String[] args) throws IOException {
 		Game game = new Game();
