@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessageController {
 
     private static MessageController instance;
-    ConcurrentHashMap<String, CommunicationParticipant> participantMap = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Double, CommunicationParticipant> participantMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, CommunicationParticipant> participantMapWithName = new ConcurrentHashMap<>();
     private Map<String,String> enteredUsers = new ConcurrentHashMap<>();
 
@@ -73,6 +73,7 @@ public class MessageController {
     }
 
     public CommunicationParticipant getParticipantByName(String name) throws Exception{
+        System.out.println(participantMapWithName);
         return participantMapWithName.get(name);
     }
 

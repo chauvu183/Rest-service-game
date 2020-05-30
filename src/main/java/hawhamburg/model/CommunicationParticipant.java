@@ -9,12 +9,12 @@ public class CommunicationParticipant {
 	public String hirings;
 	public String assignments;
 	public String messages;
-	private String id;
+	private double id;
 	private String userName;
 
 	public CommunicationParticipant(String userName) {
 		this.user = "http://172.27.0.6:5000/users/" + userName;
-		this.id = UUID.randomUUID().toString();
+		this.id = Math.random();
 		this.idle = false;
 		this.hirings = "localhost:4567/hirings/" + userName;
 		this.assignments = "localhost:4567/assignments/" + userName;
@@ -22,7 +22,7 @@ public class CommunicationParticipant {
 		this.userName = userName;
 	}
 
-	public String getId() {
+	public double getId() {
 		return id;
 	}
 	public String getUserName(){

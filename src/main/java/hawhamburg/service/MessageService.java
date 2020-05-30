@@ -1,8 +1,10 @@
 package hawhamburg.service;
 
 import com.google.gson.Gson;
+import hawhamburg.controller.HiringController;
 import hawhamburg.controller.MessageController;
 import hawhamburg.model.CommunicationParticipant;
+import hawhamburg.model.Hiring;
 import hawhamburg.model.User;
 import hawhamburg.requests.SendMessageRequest;
 import hawhamburg.response.StandardResponse;
@@ -18,6 +20,8 @@ import static spark.Spark.post;
 public class MessageService {
     private Gson gson = new Gson();
     private MessageController messageController;
+    private HiringController hiringController;
+
     private User user;
     private String baseURL = "http://172.27.0.6:5000";
     private String localURL = InetAddress.getLocalHost().getHostAddress();
@@ -54,15 +58,19 @@ public class MessageService {
             res.type("application/json");
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getAllParticipant())));
         });
-        get("/adventures/:id", (request, response) -> {
+
+      /*  get("/adventures/:id", (request, response) -> {
             response.type("application/json");
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getParticipant(request.params(":id")))));
         });
+        */
 
         get("/adventures/:userName", (request, response) -> {
             response.type("application/json");
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getParticipantByName(request.params(":userName")))));
         });
+
+
 
 
         get("/adventures/contact/:name",(req, res) ->{
@@ -79,6 +87,14 @@ public class MessageService {
                 return "invalid username";
             }
         } );
+
+        post("/adventures/hirings",((request, response) -> {
+            response.type("application/json");
+            Hiring hiring = new Gson().fromJson(request.body(), Hiring.class);
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+
+        }));
 
     }
 }

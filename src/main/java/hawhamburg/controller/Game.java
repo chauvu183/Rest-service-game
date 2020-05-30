@@ -21,6 +21,7 @@ public class Game {
     public static boolean continuing = true;
     private static final String blackboardServer = "http://172.27.0.6:5000";
     private MessageService messageService;
+    private String messageServerURL = "localhost:4567";
 
     Gson gson = new Gson();
     RestHelper restHelperBlackboard = new RestHelper();
@@ -29,6 +30,7 @@ public class Game {
     Quest quest;
     Link link;
     Task firstTask;
+    Group group;
     //MessageService ms;
 
 
@@ -226,20 +228,6 @@ public class Game {
             h2.baseUrl = "http://"+host;
             JsonNode visits = h2.sendGet(firstTask.resource);
             System.out.println("\n "+visits.getObject().getString("message"));
-
-            //TODO create method to solve all the Quest
-//            String nextVisit = visits.getObject().getString("next");
-//            JsonNode visitRats = h2.sendGet(nextVisit);
-//            JSONArray stepsTodo = visitRats.getObject().getJSONArray("steps_todo");
-//            Iterator<Object> ir = stepsTodo.iterator();
-//            while (ir.hasNext()) {
-//            	Object next = ir.next();
-//            	if (next instanceof String) {
-//            		String nextRat = (String)next;
-//            		h2.sendGet(nextRat);
-//            		h2.sendPost(nextRat, "");
-//            	}
-//            }
             
             System.out.println("Do you want to do this?"
                     +"\n Enter 'y' to solve it"
@@ -302,13 +290,33 @@ public class Game {
     }
 
     void enterTavern(String heroclass){
-        String userURL = "/adventures/contact/"+ user.getName();
+        String userURL = messageServerURL + "/adventures/contact/"+ user.getName();
         String data =  "{\"heroclass\":\""+ heroclass + "\",\"url\":\""+userURL+"\"}";
         JsonNode request = restHelperBlackboard.sendPost("/taverna/adventurers",data);
         String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
-        System.out.println(nodeString);
         Adventurer adventurer = gson.fromJson(nodeString, Adventurer.class);
         System.out.println(adventurer);
+        createGroupInTavern();
+    }
+
+    void createGroupInTavern(){
+        //TODO check if the user have been register in tavern
+
+        //HAFT DONE create a Group
+        JsonNode request = restHelperBlackboard.sendPost("/taverna/groups","\n");
+        String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
+        group = gson.fromJson(nodeString, Group.class);
+       Link linkToGroup = gson.fromJson(group.get_links().toString(),Link.class);
+        String members = linkToGroup.members;
+        System.out.println(group);
+        System.out.println(linkToGroup);
+
+    }
+
+
+
+    void joinGroupInTavern(){
+
     }
 
     void getUserInput(){
