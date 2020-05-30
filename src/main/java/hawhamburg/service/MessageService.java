@@ -7,6 +7,7 @@ import hawhamburg.model.User;
 import hawhamburg.requests.SendMessageRequest;
 import hawhamburg.response.StandardResponse;
 import hawhamburg.response.StatusResponse;
+import kong.unirest.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -41,8 +42,11 @@ public class MessageService {
 
         post("/adventures", (request, response) -> {
             response.type("application/json");
-            CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
+            String name=(new JSONObject(request.body())).getString("name");
+           // CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
+            CommunicationParticipant adventurer = new CommunicationParticipant(name);
             messageController.addParticipant(adventurer);
+            messageController.addParticipantByName(adventurer);
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
@@ -50,15 +54,21 @@ public class MessageService {
             res.type("application/json");
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getAllParticipant())));
         });
+        get("/adventures/:id", (request, response) -> {
+            response.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getParticipant(request.params(":id")))));
+        });
+
+        get("/adventures/:userName", (request, response) -> {
+            response.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getParticipantByName(request.params(":userName")))));
+        });
+
 
         get("/adventures/contact/:name",(req, res) ->{
             try{
                 String userName = req.params(":name");
-                CommunicationParticipant csr = new CommunicationParticipant();
-                csr.setUser(baseURL + "/users/" + userName);
-                csr.setGroup("");
-                csr.setHirings(localURL+ "/api/hirings/" +userName);
-                csr.setAssignments(localURL+ "/api/assignments/" +userName);
+                CommunicationParticipant csr = new CommunicationParticipant(userName);
                 res.type("application/json");
                 return new Gson().toJson(
                         new StandardResponse(StatusResponse.SUCCESS,new Gson()

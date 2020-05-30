@@ -13,6 +13,7 @@ public class MessageController {
 
     private static MessageController instance;
     ConcurrentHashMap<String, CommunicationParticipant> participantMap = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, CommunicationParticipant> participantMapWithName = new ConcurrentHashMap<>();
     private Map<String,String> enteredUsers = new ConcurrentHashMap<>();
 
     // holds the authToken for a specific user
@@ -56,12 +57,23 @@ public class MessageController {
         }
     }
 
+    public void addParticipantByName(CommunicationParticipant adventurer){
+        if(adventurer != null){
+            participantMapWithName.put(adventurer.getUserName(),adventurer);
+        }
+    }
+
+
     public Collection<CommunicationParticipant> getAllParticipant() throws Exception {
         return participantMap.values();
     }
 
     public CommunicationParticipant getParticipant(String id) throws Exception{
         return participantMap.get(id);
+    }
+
+    public CommunicationParticipant getParticipantByName(String name) throws Exception{
+        return participantMapWithName.get(name);
     }
 
     public void deleteAdventurer(String id){

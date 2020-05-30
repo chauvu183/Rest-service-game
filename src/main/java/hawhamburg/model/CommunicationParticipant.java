@@ -10,14 +10,23 @@ public class CommunicationParticipant {
 	public String assignments;
 	public String messages;
 	private String id;
+	private String userName;
 
-	public CommunicationParticipant() {
+	public CommunicationParticipant(String userName) {
+		this.user = "http://172.27.0.6:5000/users/" + userName;
 		this.id = UUID.randomUUID().toString();
 		this.idle = false;
+		this.hirings = "localhost:4567/hirings/" + userName;
+		this.assignments = "localhost:4567/assignments/" + userName;
+		this.messages = "localhost:4567/messages/" + userName;
+		this.userName = userName;
 	}
 
 	public String getId() {
 		return id;
+	}
+	public String getUserName(){
+		return userName;
 	}
 
 	public void setUser(String user) {
