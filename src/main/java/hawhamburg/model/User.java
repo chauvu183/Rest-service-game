@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class User {
     private String userId;
+    private Group ownerOfGroup;
     public String name;
     public String password;
     public JsonObject _links;
@@ -18,6 +19,10 @@ public class User {
     public User(String name, String password) {
         this.name = name;
         this.password = password;
+    }
+
+    public void setOwnerOfGroup(Group ownerOfGroup) {
+        this.ownerOfGroup = ownerOfGroup;
     }
 
     public static User generateUser(String username, String password) {
@@ -36,12 +41,17 @@ public class User {
         return userId;
     }
 
+    public Group getOwnerOfGroup() {
+        return ownerOfGroup;
+    }
+
     @Override
     public String toString() {
-        return "User {" +
-                "name='" + name + '\'' +
-                ", deliverables done=" + Arrays.toString(deliverables_done) +
-                ", delivered=" + Arrays.toString(delivered) +
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", ownerOfGroup=" + ownerOfGroup +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
                 ", ip='" + ip + '\'' +
                 ", location='" + location + '\'' +
                 '}';

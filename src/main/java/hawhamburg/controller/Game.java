@@ -302,15 +302,17 @@ public class Game {
 
     void createGroupInTavern(){
         //TODO check if the user have been register in tavern
-
         //HAFT DONE create a Group
         JsonNode request = restHelperBlackboard.sendPost("/taverna/groups","\n");
         String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
         group = gson.fromJson(nodeString, Group.class);
-       Link linkToGroup = gson.fromJson(group.get_links().toString(),Link.class);
+        user.setOwnerOfGroup(group);
+        System.out.println(user);
+        Link linkToGroup = gson.fromJson(group.get_links().toString(),Link.class);
         String members = linkToGroup.members;
         System.out.println(group);
         System.out.println(linkToGroup);
+        //assign that this user is the owner of
 
     }
 

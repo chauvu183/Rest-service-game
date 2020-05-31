@@ -3,6 +3,7 @@ package hawhamburg.service;
 import com.google.gson.Gson;
 import hawhamburg.controller.HiringController;
 import hawhamburg.controller.HeroController;
+import hawhamburg.model.Assignment;
 import hawhamburg.model.HeroParticipant;
 import hawhamburg.model.Hiring;
 import hawhamburg.model.User;
@@ -46,14 +47,22 @@ public class HeroService {
         });
 
         post("/adventures", (request, response) -> {
-            response.type("application/json");
-            String name=(new JSONObject(request.body())).getString("name");
-           // CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
-            HeroParticipant adventurer = new HeroParticipant(name);
-            heroController.addParticipant(adventurer);
-            heroController.addParticipantByName(adventurer);
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
-        });
+            try{
+                response.status(201);
+                response.type("application/json");
+                String name=(new JSONObject(request.body())).getString("name");
+                // CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
+                HeroParticipant adventurer = new HeroParticipant(name);
+                heroController.addParticipant(adventurer);
+                heroController.addParticipantByName(adventurer);
+                return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+
+            }catch (Exception e){
+                response.status(400);
+                e.printStackTrace();
+                return "invalid username";
+            }
+            });
 
         get("/adventures",(req,res)->{
             res.type("application/json");
@@ -67,9 +76,17 @@ public class HeroService {
         */
 
         get("/adventures/:userName", (request, response) -> {
-            response.type("application/json");
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(heroController.getParticipantByName(request.params(":userName")))));
-        });
+            try{
+                response.status(202);
+                response.type("application/json");
+                return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(heroController.getParticipantByName(request.params(":userName")))));
+
+            }catch(Exception e){
+                response.status(400);
+                e.printStackTrace();
+                return "invalid username";
+            }
+            });
 
 
 
@@ -94,13 +111,28 @@ public class HeroService {
             Hiring hiring = new Gson().fromJson(request.body(), Hiring.class);
             System.out.println(hiring);
             if(hiring.getGroup()!= null){
-                System.out.println("here");
+                response.status(201);
                 hiringController.handleHiring(hiring);
                 return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
             }else{
+                response.status(400);
                 return new Gson().toJson(new StandardResponse(StatusResponse.ERROR, new Gson().toJson(hiring.getMessage())));
             }
         }));
+
+        post("/adventures/assignments",(req,res)->{
+            res.type("application/json");
+            Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
+            //TODO the owner assign tasks for each member
+           return null;
+        });
+
+        post("/adventures/assignments/delivered",(req,res)->{
+            res.type("application/json");
+            Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
+            //TODO member fullfill assigned tasks and post back the result
+           return null;
+        });
 
     }
 }

@@ -1,15 +1,21 @@
 package hawhamburg.controller;
 import hawhamburg.RestHelper;
+import hawhamburg.model.HeroParticipant;
 import hawhamburg.model.Hiring;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HiringController {
     private static HiringController instance;
     private static final String blackboardURL = "http://172.27.0.6:5000";;
     private RestHelper restHelper = new RestHelper();
+    private ConcurrentHashMap<Integer, HeroParticipant> assignmentDistributes = new ConcurrentHashMap<>();
+    private List<Integer> unsolvedQuest = new ArrayList<>();
 
      private ConcurrentHashMap<String, Hiring> enteredUsers = new ConcurrentHashMap<>();
+
      private HiringController() {
          restHelper.baseUrl = blackboardURL;
     }
