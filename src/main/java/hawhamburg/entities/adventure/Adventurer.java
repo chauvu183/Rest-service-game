@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.adventure;
 
 import java.util.UUID;
 

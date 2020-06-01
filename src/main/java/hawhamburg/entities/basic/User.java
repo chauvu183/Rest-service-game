@@ -1,9 +1,7 @@
-package hawhamburg.model;
+package hawhamburg.entities.basic;
 
 import com.google.gson.JsonObject;
-
-import java.util.Arrays;
-import java.util.UUID;
+import hawhamburg.entities.group.Group;
 
 public class User {
     private String userId;

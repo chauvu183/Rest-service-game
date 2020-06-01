@@ -16,14 +16,14 @@ You have to clone this Project in your computer through SSH or HTTP
 
 ## Running the program
 
-This is a simple role playing game in Java. The User have the change to expore the Zoram World and gain experience by solving quests
+This is a simple role playing gameController in Java. The User have the change to expore the Zoram World and gain experience by solving quests
 
 ### Firt Step
 
 User have three options : 
 1.  Register a new user 
 2.  Continue with their Adventure by login into their old account
-3.  Exit the game
+3.  Exit the gameController
 ```
 __          __  _                            _______      ______                         
 \ \        / / | |                          |__   __|    |___  /                         
@@ -81,7 +81,7 @@ and then visit the location in question to do your deed.
  and list them so you can choose which quest to attend.
 
  Do you want to fullfil those quests?
-Press 'y' to continue or 'q' to exit game
+Press 'y' to continue or 'q' to exit gameController
 y
 
 
@@ -91,7 +91,7 @@ Go and kill some rats
 
  Are you ready to solve this quest?
  Enter 'm' to visit the locations to solve the quest
- Press 'q' to exit game 
+ Press 'q' to exit gameController 
 ```
 
 ## Deployment

@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.adventure;
 
 public class Message {
 	private String senderId;

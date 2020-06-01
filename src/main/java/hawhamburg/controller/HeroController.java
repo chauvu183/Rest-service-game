@@ -1,7 +1,7 @@
 package hawhamburg.controller;
 
-import hawhamburg.model.HeroParticipant;
-import hawhamburg.model.Message;
+import hawhamburg.entities.adventure.HeroParticipant;
+import hawhamburg.entities.adventure.Message;
 
 import java.util.ArrayList;
 import java.util.Collection;

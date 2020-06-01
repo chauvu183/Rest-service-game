@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.group;
 
 import com.google.gson.JsonObject;
 

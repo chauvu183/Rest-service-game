@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.adventure;
 
 public class Assignment {
     private String id;

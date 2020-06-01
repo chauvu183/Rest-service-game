@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.basic;
 
 import java.util.Arrays;
 

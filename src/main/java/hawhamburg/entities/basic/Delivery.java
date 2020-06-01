@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.basic;
 
 public class Delivery {
 	public String tokens ;

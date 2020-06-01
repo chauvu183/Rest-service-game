@@ -1,4 +1,4 @@
-package hawhamburg.model;
+package hawhamburg.entities.group;
 
 public class Hiring {
     private String group;

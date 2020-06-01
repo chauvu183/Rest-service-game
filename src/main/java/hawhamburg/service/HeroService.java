@@ -3,10 +3,10 @@ package hawhamburg.service;
 import com.google.gson.Gson;
 import hawhamburg.controller.HiringController;
 import hawhamburg.controller.HeroController;
-import hawhamburg.model.Assignment;
-import hawhamburg.model.HeroParticipant;
-import hawhamburg.model.Hiring;
-import hawhamburg.model.User;
+import hawhamburg.entities.adventure.Assignment;
+import hawhamburg.entities.adventure.HeroParticipant;
+import hawhamburg.entities.group.Hiring;
+import hawhamburg.entities.basic.User;
 import hawhamburg.requests.SendMessageRequest;
 import hawhamburg.response.StandardResponse;
 import hawhamburg.response.StatusResponse;
@@ -52,7 +52,7 @@ public class HeroService {
                 response.type("application/json");
                 String name=(new JSONObject(request.body())).getString("name");
                 // CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
-                HeroParticipant adventurer = new HeroParticipant(name);
+                HeroParticipant adventurer = new HeroParticipant(name,localURL);
                 heroController.addParticipant(adventurer);
                 heroController.addParticipantByName(adventurer);
                 return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
@@ -94,7 +94,7 @@ public class HeroService {
         get("/adventures/contact/:name",(req, res) ->{
             try{
                 String userName = req.params(":name");
-                HeroParticipant csr = new HeroParticipant(userName);
+                HeroParticipant csr = new HeroParticipant(userName,localURL);
                 res.type("application/json");
                 return new Gson().toJson(
                         new StandardResponse(StatusResponse.SUCCESS,new Gson()

@@ -1,13 +1,13 @@
 package hawhamburg;
 
-import hawhamburg.model.User;
+import hawhamburg.api.endpoints.BasicEndPoint;
+import hawhamburg.entities.basic.User;
 import kong.unirest.*;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RestHelper {
 	public String baseUrl;
 	public static String token;
+	private BasicEndPoint path;
 
 	public JsonNode sendPost(String url, String data) {
 		HttpResponse<JsonNode> request = Unirest.post(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson();
@@ -15,6 +15,26 @@ public class RestHelper {
 		request.ifSuccess(response -> {
 			//String token = body.getObject().getString("token");
 		//	System.out.println(body);
+		}).ifFailure(response ->{
+			System.out.println("Oh No! Status" + response.getStatus());
+			if (body != null) {
+				String message = body.getObject().getString("message");
+				System.out.println(message);
+				response.getParsingError().ifPresent(e -> {
+					System.out.println("Parsing Exception: " + e);
+					System.out.println("Original body: " + e.getOriginalBody());
+				});
+			}
+		});
+		return body;
+	}
+
+	public JsonNode sendPostWithPath(BasicEndPoint url, String data) {
+		HttpResponse<JsonNode> request = Unirest.post(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson();
+		JsonNode body = request.getBody();
+		request.ifSuccess(response -> {
+			//String token = body.getObject().getString("token");
+			//	System.out.println(body);
 		}).ifFailure(response ->{
 			System.out.println("Oh No! Status" + response.getStatus());
 			if (body != null) {
@@ -53,7 +73,26 @@ public class RestHelper {
 		System.out.println("sending get request to: " + baseUrl + url);
 		HttpResponse<JsonNode> request = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson();
 		JsonNode body = request.getBody();
-		System.out.println(body);
+		request.ifSuccess(response -> {
+			//String token = body.getObject().getString("token");
+			//System.out.println(body);
+		}).ifFailure(response ->{
+			System.out.println("Oh No! Status" + response.getStatus());
+			String message = body.getObject().getString("message");
+			System.out.println(message);
+			response.getParsingError().ifPresent(e -> {
+				System.out.println("Parsing Exception: " + e);
+				System.out.println("Original body: " + e.getOriginalBody());
+			});
+		});
+		return body;
+	}
+
+	public JsonNode sendGetWithPath(BasicEndPoint url) {
+		System.out.println(url);
+		System.out.println("sending get request to: " + baseUrl + url);
+		HttpResponse<JsonNode> request = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson();
+		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
 			//String token = body.getObject().getString("token");
 			//System.out.println(body);
@@ -74,6 +113,13 @@ public class RestHelper {
 		System.out.println(node);
 		return node;
 	}
+
+	public RestHelper path(final BasicEndPoint path){
+		this.path = path;
+		return this;
+	}
+
+
 
 
 }

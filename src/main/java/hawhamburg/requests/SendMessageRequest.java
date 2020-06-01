@@ -1,6 +1,6 @@
 package hawhamburg.requests;
 
-import hawhamburg.model.Message;
+import hawhamburg.entities.adventure.Message;
 
 public class SendMessageRequest {
     private Message message;

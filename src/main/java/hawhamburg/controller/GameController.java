@@ -1,27 +1,33 @@
 package hawhamburg.controller;
 
+
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+
 
 import com.google.gson.Gson;
 
 import hawhamburg.RestHelper;
-import hawhamburg.model.*;
+import hawhamburg.entities.adventure.Adventurer;
+import hawhamburg.entities.basic.Link;
+import hawhamburg.entities.basic.Quest;
+import hawhamburg.entities.basic.Task;
+import hawhamburg.entities.group.Group;
+import hawhamburg.entities.basic.User;
 import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
 
-public class Game {
-    private static final String ANSI_RESET  = "\u001B[0m";
-    private static final String GREEN  = "\u001B[92m";
-    private static final String	YELLOW = "\u001B[33m";
-    private static final String BLUE   = "\033[94m";
-    private static final String LIGHT_CYAN   = "\u001B[36m";
-
+public class GameController {
     public static Scanner userInput = new Scanner((System.in));
     public static boolean continuing = true;
-    private static final String blackboardServer = "http://172.27.0.6:5000";
     private HeroService heroService;
-    private String messageServerURL = "localhost:4567";
+
+    private static final String PROTOCOL = "http";
+    private static final String blackboardServerURL = "http://172.27.0.6:5000";
+    private Integer localHost = 4567;
+    private String localURL = InetAddress.getLocalHost().getHostAddress() ;
+    private String heroServerURL;
 
     Gson gson = new Gson();
     RestHelper restHelperBlackboard = new RestHelper();
@@ -30,11 +36,11 @@ public class Game {
     Quest quest;
     Link link;
     Task firstTask;
-    Group group;
     //MessageService ms;
 
 
-    public Game() throws UnknownHostException {
+    public GameController() throws UnknownHostException {
+        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHost);
         heroService = new HeroService();
         startGame();
     }
@@ -42,7 +48,7 @@ public class Game {
     public void startGame(){
     	//ms = new MessageService();
         intro();
-        restHelperBlackboard.baseUrl = blackboardServer;
+        restHelperBlackboard.baseUrl = blackboardServerURL;
 
         while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3') {
             playerChoice = userInput.next().charAt(0);
@@ -57,20 +63,17 @@ public class Game {
                 System.out.print("\nSuch an outlandish name dear " + name);
                 System.out.print("\nYou are fully cloaked and we want to know your secret code?\n ");
                 String password = userInput.next();
-                //ms.username = name;
                 user = new User(name, password);
                 //register as new User
                 String registerNewUser = register(user);
-                System.out.println(registerNewUser);
                 while(registerNewUser.equals("Username already taken")){
                     System.out.print("\nChoose another name. \nWhat is your name traveler?\n");
                     String newName = userInput.next();
-                    System.out.print("\nSuch an outlandish name dear " + name);
+                    System.out.print("\nSuch an outlandish name dear " + newName);
                     System.out.print("\nYou are fully cloaked and we want to know your secret code?\n ");
                     String newPassword = userInput.next();
                     user = new User(newName, newPassword);
                     registerNewUser = register(user);
-                    System.out.println(registerNewUser);
                 }
                 System.out.print("\nNice done! Welcome to Adventure World! \n");
                 userInput.reset();
@@ -291,35 +294,74 @@ public class Game {
     }
 
     void enterTavern(String heroclass){
-        String userURL = messageServerURL + "/adventures/contact/"+ user.getName();
+        String userURL = heroServerURL + "/adventures/"+ user.getName();
         String data =  "{\"heroclass\":\""+ heroclass + "\",\"url\":\""+userURL+"\"}";
+
         JsonNode request = restHelperBlackboard.sendPost("/taverna/adventurers",data);
+
+        sendToHeroService();
+
         String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
         Adventurer adventurer = gson.fromJson(nodeString, Adventurer.class);
         System.out.println(adventurer);
-        createGroupInTavern();
+
+        System.out.println("Do you want to create a new group or access to you old group?");
+        System.out.println(" You must choose...");
+        System.out.println("\t1) Create a new group");
+        System.out.println("\t2) Access to your old group");
+        System.out.println("\t3) Exit");
+        playerChoice = ' ';
+        while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3') {
+            playerChoice = userInput.next().charAt(0);
+            if(playerChoice != '1' && playerChoice != '2' && playerChoice != '3')
+                System.out.println("\nPlease enter '1', '2' or '3'");
+        }
+        switch (playerChoice){
+            case 1:{
+                createGroupInTavern();
+            }break;
+            case 2:{
+
+            }break;
+            case 3:{
+                endGame();
+            }break;
+        }
+        //createGroupInTavern();
+    }
+
+    void sendToHeroService(){
+        RestHelper restHelperToHeroService = new RestHelper();
+        //URI uri = new URI("http","heroServerURL",null);
+        restHelperToHeroService.baseUrl = heroServerURL;
+        System.out.println(heroServerURL);
+        String data = "{\"name\":\""+ user.name + "\"}";
+        restHelperToHeroService.sendPost("/adventures",data);
     }
 
     void createGroupInTavern(){
         //TODO check if the user have been register in tavern
         //HAFT DONE create a Group
-        JsonNode request = restHelperBlackboard.sendPost("/taverna/groups","\n");
-        String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
-        group = gson.fromJson(nodeString, Group.class);
+        JsonNode groupRequest = restHelperBlackboard.sendPost("/taverna/groups","\n");
+        String groupString = groupRequest.getObject().getJSONArray("object").getJSONObject(0).toString();
+        Group group = gson.fromJson(groupString, Group.class);
         user.setOwnerOfGroup(group);
-        System.out.println(user);
         Link linkToGroup = gson.fromJson(group.get_links().toString(),Link.class);
-        String members = linkToGroup.members;
+        String[] members = linkToGroup.members;
         System.out.println(group);
         System.out.println(linkToGroup);
         //assign that this user is the owner of
+    }
+
+    void accessToOldGroup(){
+        System.out.println("Please enter your group id");
+        String  userID = userInput.next();
 
     }
 
 
-
-    void joinGroupInTavern(){
-
+    void createHirings(User user){
+        System.out.println("Which ");
     }
 
     void getUserInput(){
@@ -332,6 +374,7 @@ public class Game {
     }
 
     void getMap(){
+
         JsonNode request = restHelperBlackboard.sendGet("/map");
     }
 
@@ -342,6 +385,9 @@ public class Game {
          User userData = gson.fromJson(userObject, User.class);
         System.out.println(userData);
     }
+
+
+
 
     void endGame(){
         System.out.println("Until next time!");

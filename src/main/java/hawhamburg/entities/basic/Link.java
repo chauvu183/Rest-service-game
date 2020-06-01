@@ -1,10 +1,10 @@
-package hawhamburg.model;
+package hawhamburg.entities.basic;
 
 public class Link {
     public String deliveries;
     public String self;
     public String tasks;
-    public String members;
+    public String[] members;
 
     @Override
     public String toString() {

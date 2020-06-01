@@ -3,7 +3,7 @@ package hawhamburg;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import hawhamburg.controller.Game;
+import hawhamburg.controller.GameController;
 import hawhamburg.service.HeroService;
 
 
@@ -11,7 +11,7 @@ public class Start {
 	static HeroService heroService;
 
 	public static void main(String[] args) throws IOException {
-		Game game = new Game();
+		GameController gameController = new GameController();
 		//game.startGame();
 
 		//messageService = new MessageService();
