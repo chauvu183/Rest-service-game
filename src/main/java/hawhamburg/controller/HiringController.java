@@ -39,8 +39,9 @@ public class HiringController {
     public void handleHiring(Hiring hiring){
          // TODO if the player give the group URL -> register member in this group
             if(hiring.getGroup()!= null){
+                String hiringGroup = "/taverna/groups/" + hiring.getGroup() + "/members";
                 //register als a new member in
-                restHelper.sendPost(hiring.getGroup(),"\n");
+                restHelper.sendPost(hiringGroup,"\n");
 
             }else{
                 //TODO Else if he didn't give anything -> response with a message?

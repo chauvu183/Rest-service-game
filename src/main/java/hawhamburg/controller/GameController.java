@@ -31,6 +31,7 @@ public class GameController {
 
     Gson gson = new Gson();
     RestHelper restHelperBlackboard = new RestHelper();
+    RestHelper restHelperHero = new RestHelper();
     User user = null;
     char playerChoice =' ';
     Quest quest;
@@ -42,6 +43,7 @@ public class GameController {
     public GameController() throws UnknownHostException {
         heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHost);
         heroService = new HeroService();
+        restHelperHero.baseUrl = heroServerURL;
         startGame();
     }
 
@@ -309,34 +311,35 @@ public class GameController {
         System.out.println(" You must choose...");
         System.out.println("\t1) Create a new group");
         System.out.println("\t2) Access to your old group");
-        System.out.println("\t3) Exit");
+        System.out.println("\t3) Join another group");
+        System.out.println("\t4) Exit");
         playerChoice = ' ';
-        while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3') {
+        while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3' && playerChoice != '4') {
             playerChoice = userInput.next().charAt(0);
-            if(playerChoice != '1' && playerChoice != '2' && playerChoice != '3')
-                System.out.println("\nPlease enter '1', '2' or '3'");
+            if(playerChoice != '1' && playerChoice != '2' && playerChoice != '3' && playerChoice != '4')
+                System.out.println("\nPlease enter '1', '2' ,'3' or '4'");
         }
+        System.out.println(playerChoice);
         switch (playerChoice){
-            case 1:{
+            case '1':{
                 createGroupInTavern();
             }break;
-            case 2:{
-
+            case '2':{
+                accessToOldGroup(adventurer);
             }break;
-            case 3:{
+            case '3':{
+                joinAnotherGroup(adventurer);
+            }break;
+            case '4':{
                 endGame();
             }break;
         }
-        //createGroupInTavern();
     }
 
     void sendToHeroService(){
-        RestHelper restHelperToHeroService = new RestHelper();
-        //URI uri = new URI("http","heroServerURL",null);
-        restHelperToHeroService.baseUrl = heroServerURL;
         System.out.println(heroServerURL);
         String data = "{\"name\":\""+ user.name + "\"}";
-        restHelperToHeroService.sendPost("/adventures",data);
+        restHelperHero.sendPost("/adventures",data);
     }
 
     void createGroupInTavern(){
@@ -353,15 +356,36 @@ public class GameController {
         //assign that this user is the owner of
     }
 
-    void accessToOldGroup(){
-        System.out.println("Please enter your group id");
-        String  userID = userInput.next();
+    void accessToOldGroup(Adventurer adventurer){
+        String groupID = adventurer.getGroup();
+        // Access to old Group and see the assignments
+        JsonNode groupRequest = restHelperBlackboard.sendGet("/taverna/groups/" + groupID);
+        String groupString = groupRequest.getObject().getJSONObject("object").toString();
+        System.out.println(groupString);
+        Group group = gson.fromJson(groupString, Group.class);
+        System.out.println(group);
+        if(group.getOwner() == user.name){
+            user.setOwnerOfGroup(group);
+        }
+    }
 
+
+    void joinAnotherGroup(Adventurer adventurer){
+        System.out.println("Which adventurer group do you want to join ? Enter group id.\n");
+        String groupID = userInput.next();
+        System.out.println("Which quest do you want to solve ? Enter quest\n");
+        String quest = userInput.next();
+        String data = "{\"group\":\""+ groupID + "\",\"quest\":\""+quest+"\"}";
+        restHelperHero.sendPost("/adventures/hirings/" + user.name,data);
     }
 
 
     void createHirings(User user){
-        System.out.println("Which ");
+        System.out.println("Which adventurer do you want to hire ? Enter an user name.");
+        String hiringUserName = userInput.next();
+        System.out.println("Enter the Group id.");
+        String groupID = userInput.next();
+
     }
 
     void getUserInput(){

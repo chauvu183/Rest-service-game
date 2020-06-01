@@ -17,6 +17,18 @@ public class Hiring {
         return message;
     }
 
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public void setQuest(int quest) {
+        this.quest = quest;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public String toString() {
         return "Hiring{" +

@@ -24,12 +24,14 @@ public class HeroService {
     private HiringController hiringController;
 
     private User user;
+    private static final String PROTOCOL = "http";
     private String baseURL = "http://172.27.0.6:5000";
-    private String localURL = InetAddress.getLocalHost().getHostAddress();
+    private String localURL;
 
     public HeroService() throws UnknownHostException {
         this.heroController = HeroController.getInstance();
         this.hiringController = HiringController.getInstance();
+        this.localURL = String.format("%s://%s:%d",PROTOCOL,InetAddress.getLocalHost().getHostAddress(),4567);
         registerServices();
     }
 
@@ -106,8 +108,9 @@ public class HeroService {
             }
         } );
 
-        post("/adventures/hirings",((request, response) -> {
+        post("/adventures/hirings/:name",((request, response) -> {
             response.type("application/json");
+            String userName = request.params(":name");
             Hiring hiring = new Gson().fromJson(request.body(), Hiring.class);
             System.out.println(hiring);
             if(hiring.getGroup()!= null){
