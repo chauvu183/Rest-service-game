@@ -3,6 +3,10 @@ package hawhamburg.controller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -17,6 +21,8 @@ import hawhamburg.entities.group.Group;
 import hawhamburg.entities.basic.User;
 import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 
 public class GameController {
     public static Scanner userInput = new Scanner((System.in));
@@ -201,99 +207,304 @@ public class GameController {
 
     }
 
-    void getQuest(){
-        JsonNode node = restHelperBlackboard.sendGet("/blackboard/quests");
-        String nodeString = node.getObject().getJSONArray("objects").getJSONObject(0).toString();
-        quest = gson.fromJson(nodeString, Quest.class);
-        System.out.println("\n"+quest.getDescription());
-        getTask(quest);
-    }
+//    void getQuest(){
+//        JsonNode node = restHelperBlackboard.sendGet("/blackboard/quests");
+//        String nodeString = node.getObject().getJSONArray("objects").getJSONObject(0).toString();
+//        quest = gson.fromJson(nodeString, Quest.class);
+//        System.out.println("\n"+quest.getDescription());
+//        getTask(quest);
+//    }
+//
+//    void getTask(Quest quest){
+//        link = gson.fromJson(quest.get_links().toString(),Link.class);
+//        String linkString = link.tasks;
+//        JsonNode tasks = restHelperBlackboard.sendGet(linkString);
+//        String taskString = tasks.getObject().getJSONArray("objects").getJSONObject(0).toString();
+//        firstTask = gson.fromJson(taskString, Task.class);
+//        System.out.println(firstTask.getDescription());
+//        System.out.println("\n Are you ready to solve this quest?"
+//                +"\n Enter 'm' to visit the locations to solve the quest"
+//                +"\n Press 'q' to exit game ");
+//        char answer2 = userInput.next().charAt(0);
+//        while(answer2 != 'm' && answer2 != 'q'){
+//            System.out.println("\n Please enter again");
+//            answer2 = userInput.next().charAt(0);
+//        }
+//        if (answer2 == 'q') continuing = false;
+//        if(continuing){
+//            //see the location
+//            JsonNode location = restHelperBlackboard.sendGet(firstTask.location);
+//            // solve the first quest
+//            String host = location. getObject().getJSONObject("object").getString("host");
+//            RestHelper h2 = new RestHelper();
+//            h2.baseUrl = "http://"+host;
+//            JsonNode visits = h2.sendGet(firstTask.resource);
+//            System.out.println("\n "+visits.getObject().getString("message"));
+//            
+//            System.out.println("Do you want to do this?"
+//                    +"\n Enter 'y' to solve it"
+//                    +"\n Press 'q' to exit game ");
+//            getUserInput();
+//            if(continuing){
+//                JsonNode postVisits = h2.sendPost(firstTask.resource, "\n");
+//                System.out.println(firstTask.resource);
+//                System.out.print("Get token to resolve the first quest\n");
+//                System.out.println(" Write 't' to get the Token to solve quest");
+//                char answer3 = userInput.next().charAt(0);
+//                while (answer3 !='t'){
+//                    System.out.println("Please enter again");
+//                    answer3 = userInput.next().charAt(0);
+//                    if(answer3 == 't'){
+//                        break;
+//                    }
+//                }
+//                solveFirstTask(postVisits);
+//            }
+//        }else{
+//            endGame();
+//        }
+//        userInput.reset();
+//
+//    }
+//    void solveFirstTask(JsonNode postVisits){
+//        String token = postVisits.getObject().getString("token");
+//        System.out.println(" This is your Token : "+ token);
+//        System.out.println("\n Use this Token to confirm you have resolved the quests");
+//        System.out.println("\n Confirmed?");
+//        getUserInput();
+//        String taskUrl = firstTask.getlink().get("self").toString();
+//        String inputData = "{\"tokens\":{"+ taskUrl +":\""+token+"\"}}";
+//        //get the correct url /blackboard/tasks/1
+//        JsonNode result = restHelperBlackboard.sendPost(link.deliveries,inputData);
+//        String status = result.getObject().getString("status");
+//        if(status.equals("success")){
+//            System.out.println(" _____                             _          __   __            _                     \n" +
+//                    "/  __ \\                           | |         \\ \\ / /           | |                    \n" +
+//                    "| /  \\/ ___  _ __   __ _ _ __ __ _| |_ ___     \\ V /___  _   _  | |__   __ ___   _____ \n" +
+//                    "| |    / _ \\| '_ \\ / _` | '__/ _` | __/ __|     \\ // _ \\| | | | | '_ \\ / _` \\ \\ / / _ \\\n" +
+//                    "| \\__/\\ (_) | | | | (_| | | | (_| | |_\\__ \\_    | | (_) | |_| | | | | | (_| |\\ V /  __/\n" +
+//                    " \\____/\\___/|_| |_|\\__, |_|  \\__,_|\\__|___( )   \\_/\\___/ \\__,_| |_| |_|\\__,_| \\_/ \\___|\n" +
+//                    "                    __/ |                 |/                                           \n" +
+//                    "                   |___/           ");
+//
+//            System.out.println("           _               _   _   _             __      _     _    ___  ____         _             \n" +
+//                    "          | |             | | | | | |           / _|    (_)   | |   |  \\/  (_)       (_)            \n" +
+//                    " ___  ___ | |_   _____  __| | | |_| |__   ___  | |_ _ __ _ ___| |_  | .  . |_ ___ ___ _  ___  _ __  \n" +
+//                    "/ __|/ _ \\| \\ \\ / / _ \\/ _` | | __| '_ \\ / _ \\ |  _| '__| / __| __| | |\\/| | / __/ __| |/ _ \\| '_ \\ \n" +
+//                    "\\__ \\ (_) | |\\ V /  __/ (_| | | |_| | | |  __/ | | | |  | \\__ \\ |_  | |  | | \\__ \\__ \\ | (_) | | | |\n" +
+//                    "|___/\\___/|_| \\_/ \\___|\\__,_|  \\__|_| |_|\\___| |_| |_|  |_|___/\\__| \\_|  |_/_|___/___/_|\\___/|_| |_|");
+//
+//        }
+//       }
+//
+//    void solveOtherTask(){
+//
+//    }
+    
+    void getQuest() {
+		JsonNode node = restHelperBlackboard.sendGet("/blackboard/quests");
+		String nodeString = node.getObject().getJSONArray("objects").getJSONObject(0).toString();
+		quest = gson.fromJson(nodeString, Quest.class);
+		System.out.println("\n" + quest.getDescription());
+		getTask(quest);
+	}
 
-    void getTask(Quest quest){
-        link = gson.fromJson(quest.get_links().toString(),Link.class);
-        String linkString = link.tasks;
-        JsonNode tasks = restHelperBlackboard.sendGet(linkString);
-        String taskString = tasks.getObject().getJSONArray("objects").getJSONObject(0).toString();
-        firstTask = gson.fromJson(taskString, Task.class);
-        System.out.println(firstTask.getDescription());
-        System.out.println("\n Are you ready to solve this quest?"
-                +"\n Enter 'm' to visit the locations to solve the quest"
-                +"\n Press 'q' to exit game ");
-        char answer2 = userInput.next().charAt(0);
-        while(answer2 != 'm' && answer2 != 'q'){
-            System.out.println("\n Please enter again");
-            answer2 = userInput.next().charAt(0);
-        }
-        if (answer2 == 'q') continuing = false;
-        if(continuing){
-            //see the location
-            JsonNode location = restHelperBlackboard.sendGet(firstTask.location);
-            // solve the first quest
-            String host = location. getObject().getJSONObject("object").getString("host");
-            RestHelper h2 = new RestHelper();
-            h2.baseUrl = "http://"+host;
-            JsonNode visits = h2.sendGet(firstTask.resource);
-            System.out.println("\n "+visits.getObject().getString("message"));
-            
-            System.out.println("Do you want to do this?"
-                    +"\n Enter 'y' to solve it"
-                    +"\n Press 'q' to exit game ");
-            getUserInput();
-            if(continuing){
-                JsonNode postVisits = h2.sendPost(firstTask.resource, "\n");
-                System.out.println(firstTask.resource);
-                System.out.print("Get token to resolve the first quest\n");
-                System.out.println(" Write 't' to get the Token to solve quest");
-                char answer3 = userInput.next().charAt(0);
-                while (answer3 !='t'){
-                    System.out.println("Please enter again");
-                    answer3 = userInput.next().charAt(0);
-                    if(answer3 == 't'){
-                        break;
-                    }
-                }
-                solveFirstTask(postVisits);
-            }
-        }else{
-            endGame();
-        }
-        userInput.reset();
+	void getTask(Quest quest) {
+		link = gson.fromJson(quest.get_links().toString(), Link.class);
+		String linkString = link.tasks;
+		JsonNode tasks = restHelperBlackboard.sendGet(linkString);
+		String taskString = tasks.getObject().getJSONArray("objects").getJSONObject(0).toString();
+		firstTask = gson.fromJson(taskString, Task.class);
+		System.out.println(firstTask.getDescription());
+		System.out.println("\n Are you ready to solve this quest?"
+				+ "\n Enter 'm' to visit the locations to solve the quest" + "\n Press 'q' to exit game ");
+		char answer2 = userInput.next().charAt(0);
+		while (answer2 != 'm' && answer2 != 'q') {
+			System.out.println("\n Please enter again");
+			answer2 = userInput.next().charAt(0);
+		}
+		if (answer2 == 'q')
+			continuing = false;
+		if (continuing) {
+			
+			
+			// see the location
+			JsonNode location = restHelperBlackboard.sendGet(firstTask.location);
+			// String tasksCount = location.
+			// getObject().getJSONObject("object").getString("tasks");
+			// solve the first quest
+			String host = location.getObject().getJSONObject("object").getString("host");
+			RestHelper h2 = new RestHelper();
+			h2.baseUrl = "http://" + host;
+			JsonNode visits = h2.sendGet(firstTask.resource);
+			System.out.println("\n " + visits.getObject().getString("message"));
 
-    }
-    void solveFirstTask(JsonNode postVisits){
-        String token = postVisits.getObject().getString("token");
-        System.out.println(" This is your Token : "+ token);
-        System.out.println("\n Use this Token to confirm you have resolved the quests");
-        System.out.println("\n Confirmed?");
-        getUserInput();
-        String taskUrl = firstTask.getlink().get("self").toString();
-        String inputData = "{\"tokens\":{"+ taskUrl +":\""+token+"\"}}";
-        //get the correct url /blackboard/tasks/1
-        JsonNode result = restHelperBlackboard.sendPost(link.deliveries,inputData);
-        String status = result.getObject().getString("status");
-        if(status.equals("success")){
-            System.out.println(" _____                             _          __   __            _                     \n" +
-                    "/  __ \\                           | |         \\ \\ / /           | |                    \n" +
-                    "| /  \\/ ___  _ __   __ _ _ __ __ _| |_ ___     \\ V /___  _   _  | |__   __ ___   _____ \n" +
-                    "| |    / _ \\| '_ \\ / _` | '__/ _` | __/ __|     \\ // _ \\| | | | | '_ \\ / _` \\ \\ / / _ \\\n" +
-                    "| \\__/\\ (_) | | | | (_| | | | (_| | |_\\__ \\_    | | (_) | |_| | | | | | (_| |\\ V /  __/\n" +
-                    " \\____/\\___/|_| |_|\\__, |_|  \\__,_|\\__|___( )   \\_/\\___/ \\__,_| |_| |_|\\__,_| \\_/ \\___|\n" +
-                    "                    __/ |                 |/                                           \n" +
-                    "                   |___/           ");
+			// trying to make the quest solving as generic as possible...
+			// we check if the result contains a field named next which could contain additional steps
+			// if not, handling for the first quest is the same in the else block
+			String preDelivery = "";
+			if (visits.getObject().has("next")) {
+				String nextVisit = visits.getObject().getString("next");
+				preDelivery = nextVisit;
+				JsonNode visitRats = h2.sendGet(nextVisit);
+				// Read all steps to todos 
+				JSONArray stepsTodo = visitRats.getObject().getJSONArray("steps_todo");
+				Iterator<Object> ir = stepsTodo.iterator();
+				List<String> gainedTokens = new ArrayList<>();
+//				List<String> taskUris = new ArrayList<>();
+				// With iterator through all steps
+				while (ir.hasNext()) {
+					Object next = ir.next();
+					if (next instanceof String) {
+						String nextRat = (String) next;
+//						taskUris.add(nextRat);
+//						getUserInput();
+						// Send get to next step
+						h2.sendGet(nextRat);
+						// in the response it is mentioned that we need to post something to kill the rat
+						JsonNode postResponse = h2.sendPost(nextRat, "");
+						
+						String token = postResponse.getObject().getString("token");
+						gainedTokens.add(token);
+						System.err.println("We got our token: " + token);
+					}
+				}
+				System.out.println("gainedTokens size " + gainedTokens.size());
+				solveTask(firstTask.getlink().get("self").toString(), preDelivery,host, gainedTokens);
+			} else {
+				System.out
+						.println("Do you want to do this?" + "\n Enter 'y' to solve it" + "\n Press 'q' to exit game ");
+				getUserInput();
+				if (continuing) {
+					JsonNode postVisits = h2.sendPost(firstTask.resource, "\n");
+					System.out.println(firstTask.resource);
+					System.out.print("Get token to resolve the first quest\n");
+					System.out.println(" Write 't' to get the Token to solve quest");
+					char answer3 = userInput.next().charAt(0);
+					while (answer3 != 't') {
+						System.out.println("Please enter again");
+						answer3 = userInput.next().charAt(0);
+						if (answer3 == 't') {
+							break;
+						}
+					}
+					solveTask(firstTask.getlink().get("self").toString(), null, null,Arrays.asList(postVisits.getObject().getString("token")));
 
-            System.out.println("           _               _   _   _             __      _     _    ___  ____         _             \n" +
-                    "          | |             | | | | | |           / _|    (_)   | |   |  \\/  (_)       (_)            \n" +
-                    " ___  ___ | |_   _____  __| | | |_| |__   ___  | |_ _ __ _ ___| |_  | .  . |_ ___ ___ _  ___  _ __  \n" +
-                    "/ __|/ _ \\| \\ \\ / / _ \\/ _` | | __| '_ \\ / _ \\ |  _| '__| / __| __| | |\\/| | / __/ __| |/ _ \\| '_ \\ \n" +
-                    "\\__ \\ (_) | |\\ V /  __/ (_| | | |_| | | |  __/ | | | |  | \\__ \\ |_  | |  | | \\__ \\__ \\ | (_) | | | |\n" +
-                    "|___/\\___/|_| \\_/ \\___|\\__,_|  \\__|_| |_|\\___| |_| |_|  |_|___/\\__| \\_|  |_/_|___/___/_|\\___/|_| |_|");
+				}
+				// TODO create method to solve all the Quest
 
-        }
-       }
+			}
+		} else {
+			endGame();
+		}
+		userInput.reset();
 
-    void solveOtherTask(){
+	}
 
-    }
+	/**
+	 * solve task is an generic method to solve a task...
+	 * it takes a task and a tokens list, since some task require several tokens
+	 * 
+	 * @param task
+	 * @param tokens
+	 */
+	void solveTask(String taskLink,String preDelivery, String preDeliveryHost, List<String> tokens) {
+		// String token = postVisits.getObject().getString("token");
+		JsonNode finalResult = null;
+		// get the correct url /blackboard/tasks/1
+		if (preDelivery != null) {
+			RestHelper h2 = new RestHelper();
+			h2.baseUrl = "http://" + preDeliveryHost;
+			System.out.println("sending prelivery to " + preDelivery);
+			JSONObject inputData = new JSONObject();
+			inputData.put("tokens", tokens);
+			JsonNode preResult = h2.sendPost(preDelivery, inputData.toString());
+			String finalToken = preResult.getObject().getString("token");
+			
+			JSONObject inputData2 = new JSONObject();
+			System.out.println("final token is" + finalToken);
+			JSONObject taskLinkWithToken = new JSONObject();
+			taskLinkWithToken.put(taskLink, finalToken);
+			inputData2.put("tokens", taskLinkWithToken);
+			// Wir haben hier beispielsweise 3 tokens und alle schritte gelöst aber können die nicht delivern
+			// TODO : Question to solve... How do we deliver several tokens????
+			System.out.println("link deliveries are " + link.deliveries);
+			finalResult = restHelperBlackboard.sendPost(link.deliveries, "{\"tokens\":{"+ taskLink +":\""+finalToken+"\"}}");
+		} else {
+			JSONObject inputData2 = new JSONObject();
+			System.out.println("final token is" + tokens.get(0));
+			JSONObject taskLinkWithToken = new JSONObject();
+			taskLinkWithToken.put(taskLink, tokens.get(0));
+			inputData2.put("tokens", taskLinkWithToken);
+			// Wir haben hier beispielsweise 3 tokens und alle schritte gelöst aber können die nicht delivern
+			// TODO : Question to solve... How do we deliver several tokens????
+			System.out.println("link deliveries are " + link.deliveries);
+			finalResult = restHelperBlackboard.sendPost(link.deliveries, "{\"tokens\":{"+ taskLink +":\""+tokens.get(0)+"\"}}");
+		}
+		
+//		String inputDataString2 = "";
+//		String inputDataString = "";
+		// We want to go through all tokens and build an result json to continue all tokens...
+//		int i = 0;
+//		JsonNode result = null;
+//		for (String token : tokens) {
+//			JSONObject inputData = new JSONObject();
+//			JSONObject taskUrlToToken = new JSONObject();
+//			System.out.println(" This is your Token : " + token);
+//			System.out.println("\n Use this Token to confirm you have resolved the quests");
+//			System.out.println("\n Confirmed?");
+//			getUserInput();
+//			String taskUrl = taskLink;
+//
+////        	
+//			// this builds the tokens ... problem here is that we always user taskURL so tokens get overwritten
+//			// so we tried to use an array for all tokens but delivery wasn't accepted
+//			taskUrlToToken.put(taskUrl, token);
+//
+//			 inputDataString = "{\"tokens\":{"+ taskUrl
+//			 +":\""+token+"\"}}";
+//			 
+//			 System.out.println("these are the tokens " + taskUrlToToken.toString());
+//				
+//			// System.out.println("idata1 "+inputDataString);
+////			 i++;
+////        	System.out.println("\n Confirmed?");
+//
+//		}
+//		JSONObject inputData = new JSONObject();
+//		System.out.println("tokens are " + tokens);
+//		inputData.put("tokens", tokens);
+//		inputDataString = inputData.toString();
+//		System.out.println("idata2 " + inputDataString);
+//		// Wir haben hier beispielsweise 3 tokens und alle schritte gelöst aber können die nicht delivern
+//		// TODO : Question to solve... How do we deliver several tokens????
+//		System.out.println("link deliveries are " + link.deliveries);
+//		result = restHelperBlackboard.sendPost(link.deliveries, inputDataString);
+		
+
+		String status = finalResult.getObject().getString("status");
+		if (status.equals("success")) {
+			System.out
+					.println(" _____                             _          __   __            _                     \n"
+							+ "/  __ \\                           | |         \\ \\ / /           | |                    \n"
+							+ "| /  \\/ ___  _ __   __ _ _ __ __ _| |_ ___     \\ V /___  _   _  | |__   __ ___   _____ \n"
+							+ "| |    / _ \\| '_ \\ / _` | '__/ _` | __/ __|     \\ // _ \\| | | | | '_ \\ / _` \\ \\ / / _ \\\n"
+							+ "| \\__/\\ (_) | | | | (_| | | | (_| | |_\\__ \\_    | | (_) | |_| | | | | | (_| |\\ V /  __/\n"
+							+ " \\____/\\___/|_| |_|\\__, |_|  \\__,_|\\__|___( )   \\_/\\___/ \\__,_| |_| |_|\\__,_| \\_/ \\___|\n"
+							+ "                    __/ |                 |/                                           \n"
+							+ "                   |___/           ");
+
+			System.out.println(
+					"           _               _   _   _             __      _     _    ___  ____         _             \n"
+							+ "          | |             | | | | | |           / _|    (_)   | |   |  \\/  (_)       (_)            \n"
+							+ " ___  ___ | |_   _____  __| | | |_| |__   ___  | |_ _ __ _ ___| |_  | .  . |_ ___ ___ _  ___  _ __  \n"
+							+ "/ __|/ _ \\| \\ \\ / / _ \\/ _` | | __| '_ \\ / _ \\ |  _| '__| / __| __| | |\\/| | / __/ __| |/ _ \\| '_ \\ \n"
+							+ "\\__ \\ (_) | |\\ V /  __/ (_| | | |_| | | |  __/ | | | |  | \\__ \\ |_  | |  | | \\__ \\__ \\ | (_) | | | |\n"
+							+ "|___/\\___/|_| \\_/ \\___|\\__,_|  \\__|_| |_|\\___| |_| |_|  |_|___/\\__| \\_|  |_/_|___/___/_|\\___/|_| |_|");
+
+		}
+
+	}
 
     void enterTavern(String heroclass){
         String userURL = heroServerURL + "/adventures/"+ user.getName();
