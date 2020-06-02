@@ -6,6 +6,7 @@ import hawhamburg.entities.adventure.HeroParticipant;
 import hawhamburg.entities.group.Hiring;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +18,6 @@ public class HiringAndAssignmentController {
     private RestHelper restHelper = new RestHelper();
     private final Gson gson = new Gson();
 
-    private ConcurrentHashMap<Integer, HeroParticipant> assignmentDistributes = new ConcurrentHashMap<>();
     private List<Integer> unsolvedQuest = new ArrayList<>();
 
      private ConcurrentHashMap<String, Hiring> enteredUsers = new ConcurrentHashMap<>();
@@ -55,6 +55,14 @@ public class HiringAndAssignmentController {
             assignment.setMessage("There are no Assignment right now");
             //TODO Else if he didn't give anything -> response with a message?
         }
+    }
+
+    public Collection<Assignment> getAllAssignment(){
+         return assignmentDivision.values();
+    }
+
+    public Assignment getAssignmentByName (String name){
+         return assignmentDivision.get(name);
     }
 
 }

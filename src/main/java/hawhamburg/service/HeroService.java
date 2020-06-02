@@ -132,6 +132,25 @@ public class HeroService {
            return null;
         });
 
+        get("/adventures/assignments/:name",(req,res)->{
+            res.type("application/json");
+            String userName = req.params(":name");
+            Assignment assignment = hiringAndAssignmentController.getAssignmentByName(userName);
+
+            res.status(202);
+            res.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(assignment)));
+
+        });
+
+        get("/adventures/assignments",(req,res)->{
+            res.status(202);
+            res.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(hiringAndAssignmentController.getAllAssignment())));
+
+        });
+
+
         post("/adventures/assignments/delivered",(req,res)->{
             res.type("application/json");
             Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
