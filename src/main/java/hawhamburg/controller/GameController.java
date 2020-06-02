@@ -34,7 +34,7 @@ public class GameController {
     private static final String PROTOCOL = "http";
     private static final String blackboardServerURL = "http://172.27.0.6:5000";
     //private ServerSocket socket = new ServerSocket(0);
-    private Integer localHost;
+    private Integer localHost = 4567;
     private String localURL = InetAddress.getLocalHost().getHostAddress() ;
     private String heroServerURL;
 
@@ -50,13 +50,13 @@ public class GameController {
 
 
     public GameController() throws IOException {
-        try {
+/*        try {
             ServerSocket s = create(new int[] { 3843, 4584, 4843,2345 });
             localHost = s.getLocalPort();
             System.out.println("listening on port: " + s.getLocalPort());
         } catch (IOException ex) {
             System.err.println("no available ports");
-        }
+        }*/
         heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHost);
         heroService = new HeroService();
         restHelperHero.baseUrl = heroServerURL;
@@ -429,7 +429,7 @@ public class GameController {
 	 * solve task is an generic method to solve a task...
 	 * it takes a task and a tokens list, since some task require several tokens
 	 *
-	 * @param task
+	 *
 	 * @param tokens
 	 */
 	void solveTask(String taskLink,String preDelivery, String preDeliveryHost, List<String> tokens) {
