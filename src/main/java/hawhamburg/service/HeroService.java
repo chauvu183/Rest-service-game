@@ -1,9 +1,9 @@
 package hawhamburg.service;
 
 import com.google.gson.Gson;
-import hawhamburg.controller.HiringController;
+import hawhamburg.controller.HiringAndAssignmentController;
 import hawhamburg.controller.HeroController;
-import hawhamburg.entities.adventure.Assignment;
+import hawhamburg.entities.group.Assignment;
 import hawhamburg.entities.adventure.HeroParticipant;
 import hawhamburg.entities.group.Hiring;
 import hawhamburg.entities.basic.User;
@@ -21,7 +21,7 @@ import static spark.Spark.post;
 public class HeroService {
     private Gson gson = new Gson();
     private HeroController heroController;
-    private HiringController hiringController;
+    private HiringAndAssignmentController hiringAndAssignmentController;
 
     private User user;
     private static final String PROTOCOL = "http";
@@ -30,7 +30,7 @@ public class HeroService {
 
     public HeroService() throws UnknownHostException {
         this.heroController = HeroController.getInstance();
-        this.hiringController = HiringController.getInstance();
+        this.hiringAndAssignmentController = HiringAndAssignmentController.getInstance();
         this.localURL = String.format("%s://%s:%d",PROTOCOL,InetAddress.getLocalHost().getHostAddress(),4567);
         registerServices();
     }
@@ -115,7 +115,7 @@ public class HeroService {
             System.out.println(hiring);
             if(hiring.getGroup()!= null){
                 response.status(201);
-                hiringController.handleHiring(hiring);
+                hiringAndAssignmentController.handleHiring(hiring);
                 return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
             }else{
                 response.status(400);
@@ -123,9 +123,11 @@ public class HeroService {
             }
         }));
 
-        post("/adventures/assignments",(req,res)->{
+        post("/adventures/assignments/:name",(req,res)->{
             res.type("application/json");
+            String userName = req.params(":name");
             Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
+            hiringAndAssignmentController.handleAssignment(assignment,userName);
             //TODO the owner assign tasks for each member
            return null;
         });

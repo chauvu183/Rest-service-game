@@ -1,7 +1,9 @@
 package hawhamburg.controller;
 
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +33,8 @@ public class GameController {
 
     private static final String PROTOCOL = "http";
     private static final String blackboardServerURL = "http://172.27.0.6:5000";
-    private Integer localHost = 4567;
+    //private ServerSocket socket = new ServerSocket(0);
+    private Integer localHost;
     private String localURL = InetAddress.getLocalHost().getHostAddress() ;
     private String heroServerURL;
 
@@ -46,11 +49,32 @@ public class GameController {
     //MessageService ms;
 
 
-    public GameController() throws UnknownHostException {
+    public GameController() throws IOException {
+        try {
+            ServerSocket s = create(new int[] { 3843, 4584, 4843,2345 });
+            localHost = s.getLocalPort();
+            System.out.println("listening on port: " + s.getLocalPort());
+        } catch (IOException ex) {
+            System.err.println("no available ports");
+        }
         heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHost);
         heroService = new HeroService();
         restHelperHero.baseUrl = heroServerURL;
         startGame();
+
+    }
+
+    public ServerSocket create(int[] ports) throws IOException {
+        for (int port : ports) {
+            try {
+                return new ServerSocket(port);
+            } catch (IOException ex) {
+                continue; // try next port
+            }
+        }
+
+        // if the program gets here, no port in the range was found
+        throw new IOException("no free port found");
     }
 
     public void startGame(){
@@ -240,7 +264,7 @@ public class GameController {
 //            h2.baseUrl = "http://"+host;
 //            JsonNode visits = h2.sendGet(firstTask.resource);
 //            System.out.println("\n "+visits.getObject().getString("message"));
-//            
+//
 //            System.out.println("Do you want to do this?"
 //                    +"\n Enter 'y' to solve it"
 //                    +"\n Press 'q' to exit game ");
@@ -300,7 +324,7 @@ public class GameController {
 //    void solveOtherTask(){
 //
 //    }
-    
+
     void getQuest() {
 		JsonNode node = restHelperBlackboard.sendGet("/blackboard/quests");
 		String nodeString = node.getObject().getJSONArray("objects").getJSONObject(0).toString();
@@ -326,8 +350,8 @@ public class GameController {
 		if (answer2 == 'q')
 			continuing = false;
 		if (continuing) {
-			
-			
+
+
 			// see the location
 			JsonNode location = restHelperBlackboard.sendGet(firstTask.location);
 			// String tasksCount = location.
@@ -347,7 +371,7 @@ public class GameController {
 				String nextVisit = visits.getObject().getString("next");
 				preDelivery = nextVisit;
 				JsonNode visitRats = h2.sendGet(nextVisit);
-				// Read all steps to todos 
+				// Read all steps to todos
 				JSONArray stepsTodo = visitRats.getObject().getJSONArray("steps_todo");
 				Iterator<Object> ir = stepsTodo.iterator();
 				List<String> gainedTokens = new ArrayList<>();
@@ -363,7 +387,7 @@ public class GameController {
 						h2.sendGet(nextRat);
 						// in the response it is mentioned that we need to post something to kill the rat
 						JsonNode postResponse = h2.sendPost(nextRat, "");
-						
+
 						String token = postResponse.getObject().getString("token");
 						gainedTokens.add(token);
 						System.err.println("We got our token: " + token);
@@ -404,7 +428,7 @@ public class GameController {
 	/**
 	 * solve task is an generic method to solve a task...
 	 * it takes a task and a tokens list, since some task require several tokens
-	 * 
+	 *
 	 * @param task
 	 * @param tokens
 	 */
@@ -420,7 +444,7 @@ public class GameController {
 			inputData.put("tokens", tokens);
 			JsonNode preResult = h2.sendPost(preDelivery, inputData.toString());
 			String finalToken = preResult.getObject().getString("token");
-			
+
 			JSONObject inputData2 = new JSONObject();
 			System.out.println("final token is" + finalToken);
 			JSONObject taskLinkWithToken = new JSONObject();
@@ -441,7 +465,7 @@ public class GameController {
 			System.out.println("link deliveries are " + link.deliveries);
 			finalResult = restHelperBlackboard.sendPost(link.deliveries, "{\"tokens\":{"+ taskLink +":\""+tokens.get(0)+"\"}}");
 		}
-		
+
 //		String inputDataString2 = "";
 //		String inputDataString = "";
 		// We want to go through all tokens and build an result json to continue all tokens...
@@ -456,16 +480,16 @@ public class GameController {
 //			getUserInput();
 //			String taskUrl = taskLink;
 //
-////        	
+////
 //			// this builds the tokens ... problem here is that we always user taskURL so tokens get overwritten
 //			// so we tried to use an array for all tokens but delivery wasn't accepted
 //			taskUrlToToken.put(taskUrl, token);
 //
 //			 inputDataString = "{\"tokens\":{"+ taskUrl
 //			 +":\""+token+"\"}}";
-//			 
+//
 //			 System.out.println("these are the tokens " + taskUrlToToken.toString());
-//				
+//
 //			// System.out.println("idata1 "+inputDataString);
 ////			 i++;
 ////        	System.out.println("\n Confirmed?");
@@ -480,7 +504,7 @@ public class GameController {
 //		// TODO : Question to solve... How do we deliver several tokens????
 //		System.out.println("link deliveries are " + link.deliveries);
 //		result = restHelperBlackboard.sendPost(link.deliveries, inputDataString);
-		
+
 
 		String status = finalResult.getObject().getString("status");
 		if (status.equals("success")) {
@@ -588,6 +612,7 @@ public class GameController {
         String quest = userInput.next();
         String data = "{\"group\":\""+ groupID + "\",\"quest\":\""+quest+"\"}";
         restHelperHero.sendPost("/adventures/hirings/" + user.name,data);
+        userInput.reset();
     }
 
 
