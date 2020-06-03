@@ -12,6 +12,7 @@ import hawhamburg.response.StandardResponse;
 import hawhamburg.response.StatusResponse;
 import kong.unirest.json.JSONObject;
 
+import javax.sound.sampled.Port;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -27,8 +28,10 @@ public class HeroService {
     private static final String PROTOCOL = "http";
     private String baseURL = "http://172.27.0.6:5000";
     private String localURL;
+    private int port;
 
-    public HeroService() throws UnknownHostException {
+    public HeroService(int port) throws UnknownHostException {
+        this.port = port;
         this.heroController = HeroController.getInstance();
         this.hiringAndAssignmentController = HiringAndAssignmentController.getInstance();
         this.localURL = String.format("%s://%s:%d",PROTOCOL,InetAddress.getLocalHost().getHostAddress(),4567);
@@ -50,7 +53,7 @@ public class HeroService {
 
         post("/adventures", (request, response) -> {
             try{
-                response.status(201);
+                response.status(200);
                 response.type("application/json");
                 String name=(new JSONObject(request.body())).getString("name");
                 // CommunicationParticipant adventurer = new Gson().fromJson(request.body(), CommunicationParticipant.class);
@@ -129,25 +132,22 @@ public class HeroService {
             Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
             hiringAndAssignmentController.handleAssignment(assignment,userName);
             //TODO the owner assign tasks for each member
-           return null;
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
         get("/adventures/assignments/:name",(req,res)->{
+            res.status(202);
             res.type("application/json");
             String userName = req.params(":name");
             Assignment assignment = hiringAndAssignmentController.getAssignmentByName(userName);
-
-            res.status(202);
-            res.type("application/json");
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(assignment)));
 
         });
 
         get("/adventures/assignments",(req,res)->{
-            res.status(202);
+            res.status(200);
             res.type("application/json");
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(hiringAndAssignmentController.getAllAssignment())));
-
+            return new Gson().toJson(new StandardResponse(StatusResponse.ERROR, new Gson().toJsonTree(hiringAndAssignmentController.getAllAssignment())));
         });
 
 

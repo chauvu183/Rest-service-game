@@ -34,7 +34,6 @@ public class GameController {
     private static final String PROTOCOL = "http";
     private static final String blackboardServerURL = "http://172.27.0.6:5000";
     //private ServerSocket socket = new ServerSocket(0);
-    private Integer localHostPort = 4567;
     private String localURL = InetAddress.getLocalHost().getHostAddress() ;
     private String heroServerURL;
 
@@ -46,23 +45,13 @@ public class GameController {
     Quest quest;
     Link link;
     Task firstTask;
-    //MessageService ms;
-
 
     public GameController(int port) throws IOException {
-    	localHostPort = port;
-/*        try {
-            ServerSocket s = create(new int[] { 3843, 4584, 4843,2345 });
-            localHost = s.getLocalPort();
-            System.out.println("listening on port: " + s.getLocalPort());
-        } catch (IOException ex) {
-            System.err.println("no available ports");
-        }*/
-        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHostPort);
-        heroService = new HeroService();
+        //Hero Server is always on port 4567
+        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, 4567);
+        heroService = new HeroService(port);
         restHelperHero.baseUrl = heroServerURL;
         startGame();
-
     }
 
     public ServerSocket create(int[] ports) throws IOException {
@@ -416,14 +405,11 @@ public class GameController {
 					solveTask(firstTask.getlink().get("self").toString(), null, null,Arrays.asList(postVisits.getObject().getString("token")));
 
 				}
-				// TODO create method to solve all the Quest
-
 			}
 		} else {
 			endGame();
 		}
 		userInput.reset();
-
 	}
 
 	/**
@@ -451,8 +437,6 @@ public class GameController {
 			JSONObject taskLinkWithToken = new JSONObject();
 			taskLinkWithToken.put(taskLink, finalToken);
 			inputData2.put("tokens", taskLinkWithToken);
-			// Wir haben hier beispielsweise 3 tokens und alle schritte gelöst aber können die nicht delivern
-			// TODO : Question to solve... How do we deliver several tokens????
 			System.out.println("link deliveries are " + link.deliveries);
 			finalResult = restHelperBlackboard.sendPost(link.deliveries, "{\"tokens\":{"+ taskLink +":\""+finalToken+"\"}}");
 		} else {
@@ -461,9 +445,7 @@ public class GameController {
 			JSONObject taskLinkWithToken = new JSONObject();
 			taskLinkWithToken.put(taskLink, tokens.get(0));
 			inputData2.put("tokens", taskLinkWithToken);
-			// Wir haben hier beispielsweise 3 tokens und alle schritte gelöst aber können die nicht delivern
-			// TODO : Question to solve... How do we deliver several tokens????
-			System.out.println("link deliveries are " + link.deliveries);
+		    System.out.println("link deliveries are " + link.deliveries);
 			finalResult = restHelperBlackboard.sendPost(link.deliveries, "{\"tokens\":{"+ taskLink +":\""+tokens.get(0)+"\"}}");
 		}
 
@@ -609,7 +591,13 @@ public class GameController {
         System.out.println(group);
         if(group.getOwner() == user.name){
             user.setOwnerOfGroup(group);
+            System.out.println("You are the owner of this group");
         }
+
+        //TODO if you are owner of this group, you can assign tasks to each members
+
+
+
     }
 
 

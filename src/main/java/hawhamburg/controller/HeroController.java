@@ -38,8 +38,6 @@ public class HeroController {
             throw new Exception("send Message parameter wrong");
         }
         messages.add(message);
-
-
         System.out.println(messagesMap);
     }
 
@@ -51,15 +49,19 @@ public class HeroController {
         }
     }
 
-    public void addParticipant(HeroParticipant adventurer){
+    public void addParticipant(HeroParticipant adventurer) throws Exception{
         if(adventurer != null){
             participantMap.put(adventurer.getId(),adventurer);
+        }else {
+            throw new Exception("User can not be added");
         }
     }
 
-    public void addParticipantByName(HeroParticipant adventurer){
+    public void addParticipantByName(HeroParticipant adventurer) throws Exception{
         if(adventurer != null){
             participantMapWithName.put(adventurer.getUserName(),adventurer);
+        }else{
+            throw new Exception("User can not be added by name");
         }
     }
 

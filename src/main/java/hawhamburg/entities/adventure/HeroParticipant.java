@@ -15,9 +15,9 @@ public class HeroParticipant {
 		this.user = "http://172.27.0.6:5000/users/" + userName;
 		this.id = Math.random();
 		this.idle = false;
-		this.hirings = localURL + "/hirings/" + userName;
-		this.assignments = localURL + "/assignments/" + userName;
-		this.messages = localURL+ "/messages/" + userName;
+		this.hirings = localURL + "/adventures/hirings/" + userName;
+		this.assignments = localURL + "/adventures/assignments/" + userName;
+		this.messages = localURL+ "/adventures/messages/" + userName;
 		this.userName = userName;
 	}
 

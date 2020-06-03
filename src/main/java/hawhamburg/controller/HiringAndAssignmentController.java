@@ -49,19 +49,18 @@ public class HiringAndAssignmentController {
 
     public void handleAssignment(Assignment assignment, String user){
         // TODO group Owner give assignments for other
-        if(assignment.getData()!= null){
+        if(assignment.getId()!= null){
             assignmentDivision.put(user,assignment);
         }else{
             assignment.setMessage("There are no Assignment right now");
-            //TODO Else if he didn't give anything -> response with a message?
         }
     }
 
-    public Collection<Assignment> getAllAssignment(){
+    public Collection<Assignment> getAllAssignment() throws Exception{
          return assignmentDivision.values();
     }
 
-    public Assignment getAssignmentByName (String name){
+    public Assignment getAssignmentByName (String name) throws Exception{
          return assignmentDivision.get(name);
     }
 
