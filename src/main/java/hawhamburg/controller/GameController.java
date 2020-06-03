@@ -34,7 +34,7 @@ public class GameController {
     private static final String PROTOCOL = "http";
     private static final String blackboardServerURL = "http://172.27.0.6:5000";
     //private ServerSocket socket = new ServerSocket(0);
-    private Integer localHost = 4567;
+    private Integer localHostPort = 4567;
     private String localURL = InetAddress.getLocalHost().getHostAddress() ;
     private String heroServerURL;
 
@@ -49,7 +49,8 @@ public class GameController {
     //MessageService ms;
 
 
-    public GameController() throws IOException {
+    public GameController(int port) throws IOException {
+    	localHostPort = port;
 /*        try {
             ServerSocket s = create(new int[] { 3843, 4584, 4843,2345 });
             localHost = s.getLocalPort();
@@ -57,7 +58,7 @@ public class GameController {
         } catch (IOException ex) {
             System.err.println("no available ports");
         }*/
-        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHost);
+        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, localHostPort);
         heroService = new HeroService();
         restHelperHero.baseUrl = heroServerURL;
         startGame();
@@ -584,10 +585,17 @@ public class GameController {
         String groupString = groupRequest.getObject().getJSONArray("object").getJSONObject(0).toString();
         Group group = gson.fromJson(groupString, Group.class);
         user.setOwnerOfGroup(group);
+        System.out.println("links is " + group.get_links().toString());
         Link linkToGroup = gson.fromJson(group.get_links().toString(),Link.class);
-        String[] members = linkToGroup.members;
+        String members = linkToGroup.members;
         System.out.println(group);
         System.out.println(linkToGroup);
+        System.out.println("You created a group, to enter the group tell me which quest you want to solve");
+        char quest = userInput.next().charAt(0);
+        int questId = Integer.parseInt(Character.toString(quest));
+        String data = "{\"group\":\""+ group.getId() + "\",\"quest\":\""+questId+"\"}";
+        restHelperHero.sendPost("/adventures/hirings/" + user.name,data);
+        
         //assign that this user is the owner of
     }
 
