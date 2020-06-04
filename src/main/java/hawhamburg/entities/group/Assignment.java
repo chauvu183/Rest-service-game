@@ -8,6 +8,7 @@ public class Assignment {
     private String data;
     private String callback;
     private String message;
+    private String user;
 
     public String getId() {
         return id;
@@ -35,6 +36,10 @@ public class Assignment {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setTask(String task) {

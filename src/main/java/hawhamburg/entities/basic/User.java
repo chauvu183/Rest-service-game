@@ -1,7 +1,11 @@
 package hawhamburg.entities.basic;
 
 import com.google.gson.JsonObject;
+import hawhamburg.entities.group.Assignment;
 import hawhamburg.entities.group.Group;
+
+import java.util.Collection;
+import java.util.Map;
 
 public class User {
     private String userId;
@@ -13,6 +17,7 @@ public class User {
     public int[] delivered;
     public String ip;
     public String location;
+    public Map<String,Assignment> assignments;
 
     public User(String name, String password) {
         this.name = name;
@@ -21,6 +26,10 @@ public class User {
 
     public void setOwnerOfGroup(Group ownerOfGroup) {
         this.ownerOfGroup = ownerOfGroup;
+    }
+
+    public void setAssignments(Map<String, Assignment> assignments) {
+        this.assignments = assignments;
     }
 
     public static User generateUser(String username, String password) {

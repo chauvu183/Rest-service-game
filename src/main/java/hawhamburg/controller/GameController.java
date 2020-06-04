@@ -537,30 +537,40 @@ public class GameController {
         Group group = gson.fromJson(groupString, Group.class);
         System.out.println("Your Group ID is " + groupID);
         System.out.println("There are " + group.getMembers().length +" members in your group.\n");
-        System.out.println("Here are member names: \n");
+        System.out.println("Here are member names: ");
         for(int x = 0; x < group.getMembers().length; x++){
             System.out.println(group.getMembers()[x] );
         }
+        boolean giveTasksDone = true;
         if(group.getOwner().equals(user.name)){
             user.setOwnerOfGroup(group);
             System.out.println("You are the owner of this group.");
             System.out.println("As a group owner you can assign tasks for your member\n");
             if(group.getMembers().length > 1){
-                Assignment assignment = new Assignment();
-                System.out.println("Which member do you want to choose ?");
-                String memberToAssign = userInput.next();
-                System.out.println("Which Task ?");
-                assignment.setTask(userInput.next()) ;
-                System.out.println("What is resources for this task?");
-                assignment.setResource( userInput.next());
-                System.out.println("Which method ?");
-                assignment.setMethod(userInput.next());
-                System.out.println("Data about tasks?");
-                assignment.setData(userInput.next());
-                System.out.println("Please send some messages to your member?");
-                assignment.setMessage(userInput.next());
-                assignment.setCallback("/adventures/assignments/"+ assignment.getId() +"/delivered");
-                restHelperHero.sendPost("/adventures/assignments/"+ memberToAssign,gson.toJson(assignment));
+                while(giveTasksDone){
+                    Assignment assignment = new Assignment();
+                    System.out.println("Which member do you want to choose ?");
+                    String memberToAssign = userInput.next();
+                    System.out.println("What is the ID of this task?");
+                    assignment.setId(userInput.next());
+                    System.out.println("Which Task ?");
+                    assignment.setTask(userInput.next()) ;
+                    System.out.println("What is resources for this task?");
+                    assignment.setResource( userInput.next());
+                    System.out.println("Which method ?");
+                    assignment.setMethod(userInput.next());
+                    System.out.println("Data about tasks?");
+                    assignment.setData(userInput.next());
+                    System.out.println("Please send some messages to your member?");
+                    assignment.setMessage(userInput.next());
+                    assignment.setCallback("/adventures/assignments/"+ assignment.getId() +"/delivered");
+                    restHelperHero.sendPost("/adventures/assignments/"+ memberToAssign,gson.toJson(assignment));
+                    System.out.println("Do you want to assign Tasks to other member?");
+                    getUserInput();
+                    if(!continuing){
+                        break;
+                    }
+                }
             }else{
                 System.out.println("You are the only member in this group.\n"
                         +"Wait for other to join\n");
@@ -577,10 +587,18 @@ public class GameController {
         Assignment receivedAssignment = gson.fromJson(receivedAssignmentString, Assignment.class);
         System.out.println("Do you want to see your assignment?");
         getUserInput();
+        System.out.println(continuing);
         if(continuing){
+            System.out.println("*************Assignments**************");
             System.out.println(receivedAssignment);
+            System.out.println("**************************************");
         }
         System.out.println("First go resolve your assignment and come back here");
+        sleep();
+	}
+
+	void solveAssignment(){
+
     }
 
 
@@ -609,7 +627,11 @@ public class GameController {
             System.out.println("\n Please enter again");
             answer = userInput.next().charAt(0);
         }
-        if (answer == 'q') continuing = false;
+        if (answer == 'q'){
+            continuing = false;
+        }else{
+            continuing = true;
+        };
     }
 
     void getMap(){
