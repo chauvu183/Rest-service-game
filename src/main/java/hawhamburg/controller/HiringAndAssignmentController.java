@@ -69,6 +69,14 @@ public class HiringAndAssignmentController {
          return assignmentDivision.values();
     }
 
+    public Collection<Assignment> getAllSolvedAssignment() throws Exception{
+        return resolvedAssigments.values();
+    }
+
+    public Assignment getResolvedAssignmentById(String id) throws Exception{
+         return resolvedAssigments.get(id);
+    }
+
     public Assignment getAssignmentByName (String name) throws Exception{
          return assignmentDivision.get(name);
     }

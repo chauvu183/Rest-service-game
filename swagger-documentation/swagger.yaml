@@ -1,0 +1,204 @@
+---
+swagger: "2.0"
+info:
+  description: "This is a new tavern service. \n"
+  version: 1.0.0
+  title: New Tavern Service
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: kiwill.vu@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: virtserver.swaggerhub.com
+basePath: /chauvu/VSClient/1.0.0
+tags:
+- name: offer
+  description: Help offers
+schemes:
+- https
+- http
+paths:
+  /offer:
+    post:
+      tags:
+      - offer
+      summary: Post a new offer
+      operationId: addOffer
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Offer object that needs to be added
+        required: true
+        schema:
+          $ref: '#/definitions/Offer'
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/Offer'
+        "400":
+          description: Invalid offer
+      security:
+      - basicAuth: []
+    patch:
+      tags:
+      - offer
+      summary: Update an existing offer
+      operationId: updateOffer
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: New Offer object
+        required: true
+        schema:
+          $ref: '#/definitions/Offer'
+      responses:
+        "200":
+          description: Successfully updated
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Offer not found
+      security:
+      - basicAuth: []
+  /offers:
+    get:
+      tags:
+      - offer
+      summary: Find all offers
+      description: Find all available offers in taverna
+      operationId: findAllOffers
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Offer'
+      security:
+      - basicAuth: []
+  /offer/findByHeroclass:
+    get:
+      tags:
+      - offer
+      summary: Find offers by heroclass
+      description: Multiple heroclass values can be provided with comma separated strings
+      operationId: findOffersByHeroclass
+      produces:
+      - application/json
+      parameters:
+      - name: heroclass
+        in: query
+        description: Heroclass values that need to be considered for filter
+        required: true
+        type: array
+        items:
+          type: string
+          default: ""
+        collectionFormat: multi
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Offer'
+        "400":
+          description: Invalid heroclass value
+      security:
+      - basicAuth: []
+  /offer/{offerId}:
+    get:
+      tags:
+      - offer
+      summary: Find offer by ID
+      description: Returns a single offer
+      operationId: getOfferById
+      produces:
+      - application/json
+      parameters:
+      - name: offerId
+        in: path
+        description: ID of offer to return
+        required: true
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/Offer'
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Offer not found
+      security:
+      - basicAuth: []
+    delete:
+      tags:
+      - offer
+      summary: Delete an offer
+      operationId: deleteOffer
+      produces:
+      - application/json
+      parameters:
+      - name: offerId
+        in: path
+        description: Offer id to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Offer not found
+      security:
+      - basicAuth: []
+securityDefinitions:
+  basicAuth:
+    type: basic
+definitions:
+  Offer:
+    type: object
+    required:
+    - contact
+    - description
+    - heroclass
+    properties:
+      id:
+        type: integer
+        format: int64
+      description:
+        type: string
+        example: Take on the most brain-wracking tasks for free out of altruism.
+      heroclass:
+        type: string
+        example: Demigod
+      contact:
+        type: string
+        example: Call me maybe!
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string

@@ -12,7 +12,6 @@ import hawhamburg.response.StandardResponse;
 import hawhamburg.response.StatusResponse;
 import kong.unirest.json.JSONObject;
 
-import javax.sound.sampled.Port;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -151,6 +150,17 @@ public class HeroService {
             Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
             hiringAndAssignmentController.handleReceivedAssigment(assignment,id);
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+        });
+
+
+        get("/adventures/assignments/:id/delivered",(req,res)->{
+            res.type("application/json");
+            String id = req.params(":id");
+            if(hiringAndAssignmentController.getResolvedAssignmentById(id) != null){
+                return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(hiringAndAssignmentController.getResolvedAssignmentById(id))));
+            }else{
+                return new Gson().toJson(null);
+            }
         });
 
     }
