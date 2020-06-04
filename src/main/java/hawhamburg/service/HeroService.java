@@ -124,7 +124,6 @@ public class HeroService {
             String userName = req.params(":name");
             Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
             hiringAndAssignmentController.handleAssignment(assignment,userName);
-            //TODO the owner assign tasks for each member
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 

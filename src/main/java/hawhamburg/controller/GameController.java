@@ -14,12 +14,9 @@ import com.google.gson.Gson;
 
 import hawhamburg.RestHelper;
 import hawhamburg.entities.adventure.Adventurer;
-import hawhamburg.entities.basic.Link;
-import hawhamburg.entities.basic.Quest;
-import hawhamburg.entities.basic.Task;
+import hawhamburg.entities.basic.*;
 import hawhamburg.entities.group.Assignment;
 import hawhamburg.entities.group.Group;
-import hawhamburg.entities.basic.User;
 import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
 import kong.unirest.json.JSONArray;
@@ -32,7 +29,7 @@ public class GameController {
     private HeroService heroService;
 
     private static final String PROTOCOL = "http";
-    private static final String blackboardServerURL = "http://172.27.0.6:5000";
+    private static final String blackboardServerURL = "http://172.27.0.6:5000"; // TODO nicht hard code
     //private ServerSocket socket = new ServerSocket(0);
     private String localURL = InetAddress.getLocalHost().getHostAddress() ;
     private String heroServerURL;
@@ -564,6 +561,7 @@ public class GameController {
                     System.out.println("Please send some messages to your member?");
                     assignment.setMessage(userInput.next());
                     assignment.setCallback("/adventures/assignments/"+ assignment.getId() +"/delivered");
+                    //TODO each group have different URL
                     restHelperHero.sendPost("/adventures/assignments/"+ memberToAssign,gson.toJson(assignment));
                     System.out.println("Do you want to assign Tasks to other member?");
                     getUserInput();
@@ -635,8 +633,13 @@ public class GameController {
     }
 
     void getMap(){
-
         JsonNode request = restHelperBlackboard.sendGet("/map");
+        JSONArray mapArray = request.getObject().getJSONArray("objects");
+        for (int x =0; x < mapArray.length();x++){
+            Location location = gson.fromJson(mapArray.getJSONObject(x).toString(),Location.class);
+            System.out.println(location);
+        }
+
     }
 
     void userInformation(User user){
@@ -647,9 +650,17 @@ public class GameController {
         System.out.println(userData);
     }
 
+    void whoami(User user){
+	    JsonNode request = restHelperBlackboard.sendGet("/whoami");
+        String userObject = request.getObject().getJSONObject("user").toString();
+        User userData = gson.fromJson(userObject, User.class);
+        System.out.println(userData);
+    }
+
 
     void logOut(){
-
+        login();
+        play();
     }
 
     void endGame(){

@@ -49,7 +49,6 @@ public class HiringAndAssignmentController {
     }
 
     public void handleAssignment(Assignment assignment, String user){
-        // TODO group Owner give assignments for other
         if(assignment.getId()!= null){
             assignmentDivision.put(user,assignment);
         }else{
