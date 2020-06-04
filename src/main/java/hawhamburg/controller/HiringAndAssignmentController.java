@@ -14,6 +14,7 @@ public class HiringAndAssignmentController {
     private static HiringAndAssignmentController instance;
     private static final String blackboardURL = "http://172.27.0.6:5000";;
     ConcurrentHashMap<String,Assignment> assignmentDivision = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String,Assignment> resolvedAssigments = new ConcurrentHashMap<>();
 
     private RestHelper restHelper = new RestHelper();
     private final Gson gson = new Gson();
@@ -51,6 +52,14 @@ public class HiringAndAssignmentController {
         // TODO group Owner give assignments for other
         if(assignment.getId()!= null){
             assignmentDivision.put(user,assignment);
+        }else{
+            assignment.setMessage("There are no Assignment right now");
+        }
+    }
+
+    public void handleReceivedAssigment(Assignment assignment,String id){
+        if(assignment.getId()!= null){
+            resolvedAssigments.put(id,assignment);
         }else{
             assignment.setMessage("There are no Assignment right now");
         }

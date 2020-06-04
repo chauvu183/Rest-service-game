@@ -74,12 +74,6 @@ public class HeroService {
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(heroController.getAllParticipant())));
         });
 
-      /*  get("/adventures/:id", (request, response) -> {
-            response.type("application/json");
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(messageController.getParticipant(request.params(":id")))));
-        });
-        */
-
         get("/adventures/:userName", (request, response) -> {
             try{
                 response.status(202);
@@ -151,11 +145,12 @@ public class HeroService {
         });
 
 
-        post("/adventures/assignments/delivered",(req,res)->{
+        post("/adventures/assignments/:id/delivered",(req,res)->{
             res.type("application/json");
+            String id = req.params(":id");
             Assignment assignment = new Gson().fromJson(req.body(),Assignment.class);
-            //TODO member fullfill assigned tasks and post back the result
-           return null;
+            hiringAndAssignmentController.handleReceivedAssigment(assignment,id);
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
     }

@@ -10,12 +10,11 @@ public class RestHelper {
 	private BasicEndPoint path;
 
 	public JsonNode sendPost(String url, String data) {
-		System.out.println("sending post to " + baseUrl + url + " with data " + data);
 		HttpResponse<JsonNode> request = Unirest.post(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson();
 		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
 			//String token = body.getObject().getString("token");
-			System.out.println(body);
+			//System.out.println(body);
 		}).ifFailure(response ->{
 			System.out.println("Oh No! Status" + response.getStatus() + "\nresponse : " + response.getBody());
 			if (body != null) {
@@ -56,7 +55,6 @@ public class RestHelper {
 		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
 			String token = body.getObject().getString("token");
-			System.out.println("authToken: " + token);
 			RestHelper.token = token;
 		}).ifFailure(response ->{
 			isValid[0] = false;
@@ -72,7 +70,6 @@ public class RestHelper {
 	}
 
 	public JsonNode sendGet(String url) {
-		System.out.println("sending get request to: " + baseUrl + url);
 		HttpResponse<JsonNode> request = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson();
 		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
@@ -91,8 +88,6 @@ public class RestHelper {
 	}
 
 	public JsonNode sendGetWithPath(BasicEndPoint url) {
-		System.out.println(url);
-		System.out.println("sending get request to: " + baseUrl + url);
 		HttpResponse<JsonNode> request = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson();
 		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
