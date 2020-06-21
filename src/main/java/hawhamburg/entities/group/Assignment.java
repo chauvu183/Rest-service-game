@@ -66,6 +66,10 @@ public class Assignment {
         this.message = message;
     }
 
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "Assignment{" +

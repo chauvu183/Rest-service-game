@@ -5,6 +5,7 @@ import hawhamburg.controller.HiringAndAssignmentController;
 import hawhamburg.controller.HeroController;
 import hawhamburg.entities.group.Assignment;
 import hawhamburg.entities.adventure.HeroParticipant;
+import hawhamburg.entities.group.ElectionDTO;
 import hawhamburg.entities.group.Hiring;
 import hawhamburg.entities.basic.User;
 import hawhamburg.requests.SendMessageRequest;
@@ -33,7 +34,7 @@ public class HeroService {
         this.port = port;
         this.heroController = HeroController.getInstance();
         this.hiringAndAssignmentController = HiringAndAssignmentController.getInstance();
-        this.localURL = String.format("%s://%s:%d",PROTOCOL,InetAddress.getLocalHost().getHostAddress(),4567);
+        this.localURL = String.format("%s://%s:%d",PROTOCOL,InetAddress.getLocalHost().getHostAddress(),port);
         registerServices();
     }
 
@@ -77,7 +78,7 @@ public class HeroService {
             try{
                 response.status(202);
                 response.type("application/json");
-                return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(heroController.getParticipantByName(request.params(":userName")))));
+                return new Gson().toJsonTree(heroController.getParticipantByName(request.params(":userName")));
 
             }catch(Exception e){
                 response.status(400);
@@ -132,8 +133,7 @@ public class HeroService {
             res.type("application/json");
             String userName = req.params(":name");
             Assignment assignment = hiringAndAssignmentController.getAssignmentByName(userName);
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(assignment)));
-
+            return  new Gson().toJsonTree(assignment);
         });
 
         get("/adventures/assignments",(req,res)->{
@@ -162,5 +162,12 @@ public class HeroService {
             }
         });
 
+
+        post("/adventures/election",(req,res)->{
+            res.type("application/json");
+            ElectionDTO electionDTO = new Gson().fromJson(req.body(),ElectionDTO.class);
+            return null;
+               // return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(hiringAndAssignmentController.getResolvedAssignmentById(id))));
+        });
     }
 }

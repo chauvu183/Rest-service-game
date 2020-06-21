@@ -17,8 +17,11 @@ import hawhamburg.entities.adventure.Adventurer;
 import hawhamburg.entities.basic.*;
 import hawhamburg.entities.group.Assignment;
 import hawhamburg.entities.group.Group;
+import hawhamburg.entities.group.Hiring;
+import hawhamburg.logic.BullyAlgo;
 import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
@@ -45,7 +48,7 @@ public class GameController {
 
     public GameController(int port) throws IOException {
         //Hero Server is always on port 4567
-        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, 4567);
+        heroServerURL = String.format("%s://%s:%d", PROTOCOL, localURL, port);
         heroService = new HeroService(port);
         restHelperHero.baseUrl = heroServerURL;
         restHelperBlackboard.baseUrl = blackboardServerURL;
@@ -162,7 +165,7 @@ public class GameController {
         return restHelperBlackboard.login(user);
     }
 
-    void play(){
+    void play() throws Exception {
         while(online){
             System.out.println("\n=========================================================\n");
             System.out.println(" /\\_/\\___  _   _ _ __    /\\/\\ (_)___ ___(_) ___  _ __  \n" +
@@ -210,11 +213,7 @@ public class GameController {
                             "                                                ");
                     //Register at Tavern
                     System.out.println("Welcome to TAVERN, where you can communicate with other heros\n");
-                    System.out.println("Firstly please subscribe yourself with a Hero class");
-                    System.out.println("Which hero class do you want to register?");
-                    String heroclass = userInput.next();
-                    System.out.println("Nice done!");
-                    enterTavern(heroclass);
+                    enterTavern();
                 }break;
                 case '3':{
                     login();
@@ -223,100 +222,6 @@ public class GameController {
             }
         }
     }
-
-//    void getQuest(){
-//        JsonNode node = restHelperBlackboard.sendGet("/blackboard/quests");
-//        String nodeString = node.getObject().getJSONArray("objects").getJSONObject(0).toString();
-//        quest = gson.fromJson(nodeString, Quest.class);
-//        System.out.println("\n"+quest.getDescription());
-//        getTask(quest);
-//    }
-//
-//    void getTask(Quest quest){
-//        link = gson.fromJson(quest.get_links().toString(),Link.class);
-//        String linkString = link.tasks;
-//        JsonNode tasks = restHelperBlackboard.sendGet(linkString);
-//        String taskString = tasks.getObject().getJSONArray("objects").getJSONObject(0).toString();
-//        firstTask = gson.fromJson(taskString, Task.class);
-//        System.out.println(firstTask.getDescription());
-//        System.out.println("\n Are you ready to solve this quest?"
-//                +"\n Enter 'm' to visit the locations to solve the quest"
-//                +"\n Press 'q' to exit game ");
-//        char answer2 = userInput.next().charAt(0);
-//        while(answer2 != 'm' && answer2 != 'q'){
-//            System.out.println("\n Please enter again");
-//            answer2 = userInput.next().charAt(0);
-//        }
-//        if (answer2 == 'q') continuing = false;
-//        if(continuing){
-//            //see the location
-//            JsonNode location = restHelperBlackboard.sendGet(firstTask.location);
-//            // solve the first quest
-//            String host = location. getObject().getJSONObject("object").getString("host");
-//            RestHelper h2 = new RestHelper();
-//            h2.baseUrl = "http://"+host;
-//            JsonNode visits = h2.sendGet(firstTask.resource);
-//            System.out.println("\n "+visits.getObject().getString("message"));
-//
-//            System.out.println("Do you want to do this?"
-//                    +"\n Enter 'y' to solve it"
-//                    +"\n Press 'q' to exit game ");
-//            getUserInput();
-//            if(continuing){
-//                JsonNode postVisits = h2.sendPost(firstTask.resource, "\n");
-//                System.out.println(firstTask.resource);
-//                System.out.print("Get token to resolve the first quest\n");
-//                System.out.println(" Write 't' to get the Token to solve quest");
-//                char answer3 = userInput.next().charAt(0);
-//                while (answer3 !='t'){
-//                    System.out.println("Please enter again");
-//                    answer3 = userInput.next().charAt(0);
-//                    if(answer3 == 't'){
-//                        break;
-//                    }
-//                }
-//                solveFirstTask(postVisits);
-//            }
-//        }else{
-//            endGame();
-//        }
-//        userInput.reset();
-//
-//    }
-//    void solveFirstTask(JsonNode postVisits){
-//        String token = postVisits.getObject().getString("token");
-//        System.out.println(" This is your Token : "+ token);
-//        System.out.println("\n Use this Token to confirm you have resolved the quests");
-//        System.out.println("\n Confirmed?");
-//        getUserInput();
-//        String taskUrl = firstTask.getlink().get("self").toString();
-//        String inputData = "{\"tokens\":{"+ taskUrl +":\""+token+"\"}}";
-//        //get the correct url /blackboard/tasks/1
-//        JsonNode result = restHelperBlackboard.sendPost(link.deliveries,inputData);
-//        String status = result.getObject().getString("status");
-//        if(status.equals("success")){
-//            System.out.println(" _____                             _          __   __            _                     \n" +
-//                    "/  __ \\                           | |         \\ \\ / /           | |                    \n" +
-//                    "| /  \\/ ___  _ __   __ _ _ __ __ _| |_ ___     \\ V /___  _   _  | |__   __ ___   _____ \n" +
-//                    "| |    / _ \\| '_ \\ / _` | '__/ _` | __/ __|     \\ // _ \\| | | | | '_ \\ / _` \\ \\ / / _ \\\n" +
-//                    "| \\__/\\ (_) | | | | (_| | | | (_| | |_\\__ \\_    | | (_) | |_| | | | | | (_| |\\ V /  __/\n" +
-//                    " \\____/\\___/|_| |_|\\__, |_|  \\__,_|\\__|___( )   \\_/\\___/ \\__,_| |_| |_|\\__,_| \\_/ \\___|\n" +
-//                    "                    __/ |                 |/                                           \n" +
-//                    "                   |___/           ");
-//
-//            System.out.println("           _               _   _   _             __      _     _    ___  ____         _             \n" +
-//                    "          | |             | | | | | |           / _|    (_)   | |   |  \\/  (_)       (_)            \n" +
-//                    " ___  ___ | |_   _____  __| | | |_| |__   ___  | |_ _ __ _ ___| |_  | .  . |_ ___ ___ _  ___  _ __  \n" +
-//                    "/ __|/ _ \\| \\ \\ / / _ \\/ _` | | __| '_ \\ / _ \\ |  _| '__| / __| __| | |\\/| | / __/ __| |/ _ \\| '_ \\ \n" +
-//                    "\\__ \\ (_) | |\\ V /  __/ (_| | | |_| | | |  __/ | | | |  | \\__ \\ |_  | |  | | \\__ \\__ \\ | (_) | | | |\n" +
-//                    "|___/\\___/|_| \\_/ \\___|\\__,_|  \\__|_| |_|\\___| |_| |_|  |_|___/\\__| \\_|  |_/_|___/___/_|\\___/|_| |_|");
-//
-//        }
-//       }
-//
-//    void solveOtherTask(){
-//
-//    }
 
     void getQuest() {
 		JsonNode node = restHelperBlackboard.sendGet("/blackboard/quests");
@@ -464,32 +369,52 @@ public class GameController {
 
 	}
 
-    void enterTavern(String heroclass){
-        String userURL = heroServerURL + "/adventures/"+ user.getName();
-        String data =  "{\"heroclass\":\""+ heroclass + "\",\"url\":\""+userURL+"\"}";
-        JsonNode request = restHelperBlackboard.sendPost("/taverna/adventurers",data);
+    void enterTavern() throws Exception {
+        String heroclass = null;
+        Adventurer adventurer = null;
+        JsonNode adventurerRequest = restHelperBlackboard.sendGet("/taverna/adventurers/"+ user.name);
+        if(adventurerRequest.getObject().getString("status").equals( "error")){
+                System.out.println("\nYou haven't registered as an adventurer.");
+                System.out.println("Firstly please subscribe yourself with a Hero class");
+                System.out.println("Which hero class do you want to register?");
+                heroclass = userInput.next();
+                System.out.println("Nice done!");
+                //register to Hero Service;
+                String userURL = heroServerURL + "/adventures/"+ user.getName();
+                String data =  "{\"heroclass\":\""+ heroclass + "\",\"url\":\""+userURL+"\"}";
+                JsonNode request = restHelperBlackboard.sendPost("/taverna/adventurers",data);
+                sendToHeroService();
+                JsonNode newAdventurerRequest = restHelperBlackboard.sendGet("/taverna/adventurers/"+ user.name);
+                String adventurerString = newAdventurerRequest.getObject().getJSONObject("object").toString();
+                adventurer = gson.fromJson(adventurerString, Adventurer.class);
+        }else{
+            String adventurerString = adventurerRequest.getObject().getJSONObject("object").toString();
+            adventurer = gson.fromJson(adventurerString, Adventurer.class);
+            if(adventurer.getUrl().contains(localURL)){
+                sendToHeroService();
+            }
+        }
 
-        sendToHeroService();
-
-        String nodeString = request.getObject().getJSONArray("object").getJSONObject(0).toString();
-        Adventurer adventurer = gson.fromJson(nodeString, Adventurer.class);
+        System.out.println("Your Rolle: " + adventurer.getHeroclass());
         System.out.println("Everyone can contact you through this URL: " + adventurer.getUrl());
-        System.out.println("Do you want to create a new group or access to you old group?");
+        System.out.println("\nDo you want to create a new group or access to you old group?");
         System.out.println(" You must choose...");
         System.out.println("\t1) Create a new group");
         System.out.println("\t2) Access to your old group");
         System.out.println("\t3) Join another group");
-        System.out.println("\t4) Logout");
+        System.out.println("\t4) Election");
+        System.out.println("\t5) Logout");
 
         playerChoice = ' ';
-        while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3' && playerChoice != '4') {
+        while(playerChoice != '1' && playerChoice != '2' && playerChoice != '3' && playerChoice != '4' && playerChoice != '5') {
             playerChoice = userInput.next().charAt(0);
-            if(playerChoice != '1' && playerChoice != '2' && playerChoice != '3' && playerChoice != '4')
-                System.out.println("\nPlease enter '1', '2' ,'3' or '4'");
+            if(playerChoice != '1' && playerChoice != '2' && playerChoice != '3' && playerChoice != '4'&& playerChoice != '5')
+                System.out.println("\nPlease enter '1', '2' ,'3' ,'4' or '5'");
         }
         switch (playerChoice){
             case '1':{
                 createGroupInTavern();
+                sleep();
                 accessToOldGroup(adventurer);
             }break;
             case '2':{
@@ -497,17 +422,35 @@ public class GameController {
             }break;
             case '3':{
                 joinAnotherGroup();
+                sleep();
                 accessToOldGroup(adventurer);
             }break;
             case '4':{
+                election(adventurer);
+            }break;
+            case '5':{
                 login();
                 play();
             }break;
         }
     }
 
+    private void election(Adventurer adventurer) throws Exception {
+        BullyAlgo bullyAlgo = new BullyAlgo();
+        bullyAlgo.electCoordinator();
+    }
+
+    private void sendElection(){
+        JsonNode electionNode = restHelperHero.sendGet("/election");
+    }
+
+
+    private void declareVictory(){
+
+    }
+
     void sendToHeroService(){
-        String data = "{\"name\":\""+ user.name + "\"}";
+        String data = "{\"name\":\""+ user.name +"\"}";
         restHelperHero.sendPost("/adventures",data);
     }
 
@@ -542,61 +485,116 @@ public class GameController {
         if(group.getOwner().equals(user.name)){
             user.setOwnerOfGroup(group);
             System.out.println("You are the owner of this group.");
-            System.out.println("As a group owner you can assign tasks for your member\n");
+            System.out.println("As a group owner you can assign tasks for your member or hiring other member\n");
             if(group.getMembers().length > 1){
-                while(giveTasksDone){
-                    Assignment assignment = new Assignment();
-                    System.out.println("Which member do you want to choose ?");
-                    String memberToAssign = userInput.next();
-                    System.out.println("What is the ID of this task?");
-                    assignment.setId(userInput.next());
-                    System.out.println("Which Task ?");
-                    assignment.setTask(userInput.next()) ;
-                    System.out.println("What is resources for this task?");
-                    assignment.setResource( userInput.next());
-                    System.out.println("Which method ?");
-                    assignment.setMethod(userInput.next());
-                    System.out.println("Data about tasks?");
-                    assignment.setData(userInput.next());
-                    System.out.println("Please send some messages to your member?");
-                    assignment.setMessage(userInput.next());
-                    assignment.setCallback("/adventures/assignments/"+ assignment.getId() +"/delivered");
-                    //TODO each group have different URL
-                    restHelperHero.sendPost("/adventures/assignments/"+ memberToAssign,gson.toJson(assignment));
-                    System.out.println("Do you want to assign Tasks to other member?");
-                    getUserInput();
-                    if(!continuing){
-                        break;
-                    }
+                System.out.println(" You must choose...");
+                System.out.println("\t1) Hiring");
+                System.out.println("\t2) Give assignment");
+                playerChoice = ' ';
+                while(playerChoice != '1' && playerChoice != '2' ) {
+                    playerChoice = userInput.next().charAt(0);
+                    if(playerChoice != '1' && playerChoice != '2' )
+                        System.out.println("\nPlease enter '1', '2'");
                 }
+                switch (playerChoice){
+                    case '1':{
+                       createHirings();
+                    }break;
+                    case '2':{
+                        giveAssignment(giveTasksDone);
+                    }break;
+                }
+
             }else{
                 System.out.println("You are the only member in this group.\n"
-                        +"Wait for other to join\n");
+                        +"Wait for other to join or create Hiring\n");
+                createHirings();
+
             }
         }else{
-            receiveAssignment();
+            receiveAssignment(adventurer);
         }
 
     }
 
-    void receiveAssignment(){
-        JsonNode receivedAssignmentNode = restHelperHero.sendGet("/adventures/assignments/"+ user.name);;
-        String receivedAssignmentString = receivedAssignmentNode.getObject().getJSONObject("data").toString();
+    void giveAssignment(boolean giveTasksDone){
+
+        while(giveTasksDone){
+            Assignment assignment = new Assignment();
+            System.out.println("Which member do you want to choose ?");
+            String memberToAssign = userInput.next();
+            System.out.println("What is the ID of this task?");
+            assignment.setId(userInput.next());
+            System.out.println("Which Task ?");
+            assignment.setTask(userInput.next()) ;
+            System.out.println("What is resources for this task?");
+            assignment.setResource( userInput.next());
+            System.out.println("Which method ?");
+            assignment.setMethod(userInput.next());
+            System.out.println("Data about tasks?");
+            assignment.setData(userInput.next());
+
+            JsonNode assignmentsRequestNode = restHelperBlackboard.get(getAdventure(memberToAssign).getUrl());
+            String assignmentsURL = assignmentsRequestNode.getObject().getString("assignments");
+
+            System.out.println("Please send some messages to your member?");
+            assignment.setMessage(userInput.next());
+            assignment.setCallback( assignmentsURL +"/delivered");
+
+            System.out.println("Sending Hiring request to "+ getAdventure(memberToAssign).getUrl());
+            System.out.println(assignmentsURL);
+            restHelperHero.post(assignmentsURL,gson.toJson(assignment));
+            System.out.println("Do you want to assign Tasks to other member?");
+            getUserInput();
+            if(!continuing){
+                break;
+            }
+        }
+    }
+
+    void receiveAssignment(Adventurer adventurer){
+        sleep();
+        JsonNode assignmentUrlNode = restHelperBlackboard.get(adventurer.getUrl());
+        String assignmentUrlString = assignmentUrlNode.getObject().getString("assignments");
+        JsonNode receivedAssignmentNode = restHelperBlackboard.get(assignmentUrlString);
+        String receivedAssignmentString = receivedAssignmentNode.getObject().toString();
         Assignment receivedAssignment = gson.fromJson(receivedAssignmentString, Assignment.class);
         System.out.println("Do you want to see your assignment?");
         getUserInput();
-        System.out.println(continuing);
         if(continuing){
             System.out.println("*************Assignments**************");
             System.out.println(receivedAssignment);
             System.out.println("**************************************");
         }
-        System.out.println("First go resolve your assignment and come back here");
-        sleep();
+        System.out.println("Do you want to deliver Assignment?");
+        getUserInput();
+        if(continuing){
+          deliverAssignment(receivedAssignment);
+        }
 	}
 
-	void solveAssignment(){
+	void deliverAssignment(Assignment assignment){
+        System.out.println("Which is the uri to the user send the tasks?");
+        String user = userInput.next();
+        System.out.println("Send some message");
+        String message = userInput.next();
 
+        //set new deliver assignment
+	    Assignment assignment1 = new Assignment();
+	    assignment1.setId(assignment.getId());
+	    assignment1.setTask(assignment.getTask());
+	    assignment1.setResource(assignment.getResource());
+	    assignment1.setMethod(assignment.getMethod());
+	    assignment1.setData(assignment.getData());
+        assignment1.setUser(user);
+        assignment1.setMessage(message);
+
+        //send to heroService
+        JsonNode assignmentsRequestNode = restHelperBlackboard.post(assignment.getCallback(),gson.toJson(assignment));
+        JsonNode deliveredassignmentsRequestNode = restHelperBlackboard.get(assignment.getCallback());
+        String deliveredassignment = deliveredassignmentsRequestNode.getObject().getJSONObject("data").toString();
+        System.out.println("deliver the assignments");
+        System.out.println(deliveredassignment);
     }
 
 
@@ -611,13 +609,28 @@ public class GameController {
     }
 
 
-    void createHirings(User user){
+    void createHirings(){
         System.out.println("Which adventurer do you want to hire ? Enter an user name.");
         String hiringUserName = userInput.next();
         System.out.println("Enter the Group id.");
-        String groupID = userInput.next();
+        String groupId = userInput.next();
+        System.out.println("Which quest should this adventurer solve?");
+        String questId = userInput.next();
+        System.out.println("Enter a message?");
+        String message = userInput.next();
+        Hiring hiring = new Hiring("/taverna/groups" + "/"+ groupId,questId, message);
+        System.out.println("Sending Hiring request to "+ getAdventure(hiringUserName).getUrl());
+        JsonNode hiringRequestNode = restHelperBlackboard.get(getAdventure(hiringUserName).getUrl());
+        String hiringURL = hiringRequestNode.getObject().getString("hirings");
+        restHelperBlackboard.post(hiringURL,gson.toJson(hiring));
+	}
 
-    }
+     private Adventurer getAdventure(String username){
+        JsonNode adventurerRequest = restHelperBlackboard.sendGet("/taverna/adventurers/"+ username);
+        String adventurerString = adventurerRequest.getObject().getJSONObject("object").toString();
+        Adventurer adventurer = gson.fromJson(adventurerString, Adventurer.class);
+        return adventurer;
+	}
 
     void getUserInput(){
         char answer = userInput.next().charAt(0);
@@ -658,7 +671,7 @@ public class GameController {
     }
 
 
-    void logOut(){
+    void logOut() throws Exception {
         login();
         play();
     }

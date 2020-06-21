@@ -1,14 +1,21 @@
 package hawhamburg.entities.adventure;
 
+import hawhamburg.entities.group.Status;
+
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class Adventurer {
+public class Adventurer  implements Comparable<Adventurer>{
 	private String heroclass;
 	private String capabilities;
 	private String url;
 	private String user;
 	private String group;
 	private String id;
+
+	private Status status;
+
+
 
 	public Adventurer() {
 		this.id = UUID.randomUUID().toString();
@@ -38,6 +45,14 @@ public class Adventurer {
 		return group;
 	}
 
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "Adventurer{" +
@@ -47,6 +62,11 @@ public class Adventurer {
 				", user='" + user + '\'' +
 				", group='" + group + '\'' +
 				'}';
+	}
+
+	@Override
+	public int compareTo(Adventurer other) {
+		return getId().compareTo(other.getId());
 	}
 }
 

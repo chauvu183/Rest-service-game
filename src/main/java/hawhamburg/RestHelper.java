@@ -29,25 +29,6 @@ public class RestHelper {
 		return body;
 	}
 
-	public JsonNode sendPostWithPath(BasicEndPoint url, String data) {
-		HttpResponse<JsonNode> request = Unirest.post(baseUrl + url).header("Authorization", "Token " + token).body(data).asJson();
-		JsonNode body = request.getBody();
-		request.ifSuccess(response -> {
-			//String token = body.getObject().getString("token");
-			//	System.out.println(body);
-		}).ifFailure(response ->{
-			System.out.println("Oh No! Status" + response.getStatus());
-			if (body != null) {
-				String message = body.getObject().getString("message");
-				System.out.println(message);
-				response.getParsingError().ifPresent(e -> {
-					System.out.println("Parsing Exception: " + e);
-					System.out.println("Original body: " + e.getOriginalBody());
-				});
-			}
-		});
-		return body;
-	}
 
 	public boolean login(User newUser) {
 		final boolean[] isValid = {true};
@@ -87,8 +68,8 @@ public class RestHelper {
 		return body;
 	}
 
-	public JsonNode sendGetWithPath(BasicEndPoint url) {
-		HttpResponse<JsonNode> request = Unirest.get(baseUrl + url).header("Authorization", "Token " + token).asJson();
+	public JsonNode get(String url) {
+		HttpResponse<JsonNode> request = Unirest.get(url).asJson();
 		JsonNode body = request.getBody();
 		request.ifSuccess(response -> {
 			//String token = body.getObject().getString("token");
@@ -101,6 +82,26 @@ public class RestHelper {
 				System.out.println("Parsing Exception: " + e);
 				System.out.println("Original body: " + e.getOriginalBody());
 			});
+		});
+		return body;
+	}
+
+	public JsonNode post(String url, String data) {
+		HttpResponse<JsonNode> request = Unirest.post(url).body(data).asJson();
+		JsonNode body = request.getBody();
+		request.ifSuccess(response -> {
+			//String token = body.getObject().getString("token");
+			//System.out.println(body);
+		}).ifFailure(response ->{
+			System.out.println("Oh No! Status" + response.getStatus() + "\nresponse : " + response.getBody());
+			if (body != null) {
+				String message = body.getObject().getString("message");
+				System.out.println(message);
+				response.getParsingError().ifPresent(e -> {
+					System.out.println("Parsing Exception: " + e);
+					System.out.println("Original body: " + e.getOriginalBody());
+				});
+			}
 		});
 		return body;
 	}
