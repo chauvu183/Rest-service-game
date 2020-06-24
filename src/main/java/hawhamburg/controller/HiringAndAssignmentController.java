@@ -3,6 +3,7 @@ import com.google.gson.Gson;
 import hawhamburg.RestHelper;
 import hawhamburg.entities.group.Assignment;
 import hawhamburg.entities.adventure.HeroParticipant;
+import hawhamburg.entities.group.ElectionDTO;
 import hawhamburg.entities.group.Hiring;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class HiringAndAssignmentController {
     private static final String blackboardURL = "http://172.27.0.6:5000";;
     ConcurrentHashMap<String,Assignment> assignmentDivision = new ConcurrentHashMap<>();
     ConcurrentHashMap<String,Assignment> resolvedAssigments = new ConcurrentHashMap<>();
+    ArrayList<ElectionDTO> electionsList = new ArrayList<>();
 
     private RestHelper restHelper = new RestHelper();
     private final Gson gson = new Gson();
@@ -36,7 +38,6 @@ public class HiringAndAssignmentController {
 
 
     public void handleHiring(Hiring hiring){
-         // TODO if the player give the group URL -> register member in this group
             if(hiring.getGroup()!= null){
                 String hiringGroup = "/taverna/groups/" + hiring.getGroup() + "/members";
                 //register als a new member in
@@ -44,7 +45,6 @@ public class HiringAndAssignmentController {
 
             }else{
                 hiring.setMessage("There are no recuiting right now");
-                //TODO Else if he didn't give anything -> response with a message?
             }
     }
 
@@ -79,5 +79,14 @@ public class HiringAndAssignmentController {
     public Assignment getAssignmentByName (String name) throws Exception{
          return assignmentDivision.get(name);
     }
+
+    public void handleReceivedElection(ElectionDTO electionDTO){
+        if(electionDTO.getMessage()!= null){
+            electionsList.add(electionDTO);
+        }else{
+            electionDTO.setMessage("There are no Assignment right now");
+        }
+    }
+
 
 }

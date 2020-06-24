@@ -4,8 +4,16 @@ public class ElectionDTO {
     private String algorithm;
     private String payload;
     private String user;
-    private Job job;
+    private JobDTO jobDTO;
     private String message;
+
+    public ElectionDTO(String algorithm, String payload, String user, JobDTO jobDTO, String message) {
+        this.algorithm = algorithm;
+        this.payload = payload;
+        this.user = user;
+        this.jobDTO = jobDTO;
+        this.message = message;
+    }
 
     public String getAlgorithm() {
         return algorithm;
@@ -19,8 +27,8 @@ public class ElectionDTO {
         return user;
     }
 
-    public Job getJob() {
-        return job;
+    public JobDTO getJobDTO() {
+        return jobDTO;
     }
 
     public String getMessage() {
@@ -33,7 +41,7 @@ public class ElectionDTO {
                 "algorithm='" + algorithm + '\'' +
                 ", payload='" + payload + '\'' +
                 ", user='" + user + '\'' +
-                ", job=" + job +
+                ", job=" + jobDTO +
                 ", message='" + message + '\'' +
                 '}';
     }
@@ -50,8 +58,8 @@ public class ElectionDTO {
         this.user = user;
     }
 
-    public void setJob(Job job) {
-        this.job = job;
+    public void setJobDTO(JobDTO jobDTO) {
+        this.jobDTO = jobDTO;
     }
 
     public void setMessage(String message) {

@@ -15,9 +15,7 @@ import com.google.gson.Gson;
 import hawhamburg.RestHelper;
 import hawhamburg.entities.adventure.Adventurer;
 import hawhamburg.entities.basic.*;
-import hawhamburg.entities.group.Assignment;
-import hawhamburg.entities.group.Group;
-import hawhamburg.entities.group.Hiring;
+import hawhamburg.entities.group.*;
 import hawhamburg.logic.BullyAlgo;
 import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
@@ -436,17 +434,8 @@ public class GameController {
     }
 
     private void election(Adventurer adventurer) throws Exception {
-        BullyAlgo bullyAlgo = new BullyAlgo();
+        BullyAlgo bullyAlgo = new BullyAlgo(adventurer);
         bullyAlgo.electCoordinator();
-    }
-
-    private void sendElection(){
-        JsonNode electionNode = restHelperHero.sendGet("/election");
-    }
-
-
-    private void declareVictory(){
-
     }
 
     void sendToHeroService(){
@@ -681,7 +670,7 @@ public class GameController {
         System.exit(0);
     }
 
-    private static void sleep() {
+    private static void sleep(){
         try {
             Thread.sleep(400);
         } catch (InterruptedException e) {
