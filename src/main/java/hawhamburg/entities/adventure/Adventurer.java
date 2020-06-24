@@ -4,6 +4,8 @@ import hawhamburg.entities.group.Status;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Adventurer  implements Comparable<Adventurer>{
 	private String heroclass;
@@ -14,8 +16,7 @@ public class Adventurer  implements Comparable<Adventurer>{
 	private String id;
 
 	private Status status;
-
-
+	String IPADDRESS_PATTERN = "^https?://\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d{1,5})?";
 
 	public Adventurer() {
 		this.id = UUID.randomUUID().toString();
@@ -53,6 +54,14 @@ public class Adventurer  implements Comparable<Adventurer>{
 		this.status = status;
 	}
 
+	public String getIpAdress(){
+		Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+		Matcher matcher = pattern.matcher(getUrl());
+		if(matcher.find()){
+			return matcher.group(0);
+		}
+		return null;
+	}
 	@Override
 	public String toString() {
 		return "Adventurer{" +

@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class AdventurerGroup {
+
+
     private final List<Adventurer> members = new CopyOnWriteArrayList<>();
     private int id;
     private AtomicReference<Adventurer> leader = new AtomicReference<>();

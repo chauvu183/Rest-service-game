@@ -11,9 +11,13 @@ import hawhamburg.entities.group.Status;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BullyAlgo {
+
     RestHelper restHelperBlackboard = new RestHelper();
+
     Gson gson = new Gson();
     public AdventurerGroup memberGroup;
     public Adventurer sourceMember;
@@ -74,7 +78,7 @@ public class BullyAlgo {
         JobDTO jobDTO = new JobDTO();
         String message = "Please election";
         ElectionDTO electionDTO = new ElectionDTO("bully","election",adventurer.getUrl(), jobDTO,message);
-       restHelperBlackboard.post(adventurer.getUrl() +"/election",gson.toJson(electionDTO));
+       restHelperBlackboard.post(adventurer.getIpAdress() +"/election",gson.toJson(electionDTO));
     }
 
     private  void sendVictory(Adventurer adventurer) {

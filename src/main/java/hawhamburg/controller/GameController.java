@@ -388,6 +388,7 @@ public class GameController {
         }else{
             String adventurerString = adventurerRequest.getObject().getJSONObject("object").toString();
             adventurer = gson.fromJson(adventurerString, Adventurer.class);
+            //System.out.println(adventurer.getIpAdress());
             if(adventurer.getUrl().contains(localURL)){
                 sendToHeroService();
             }

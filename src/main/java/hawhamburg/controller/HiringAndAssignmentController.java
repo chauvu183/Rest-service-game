@@ -80,6 +80,14 @@ public class HiringAndAssignmentController {
          return assignmentDivision.get(name);
     }
 
+    public boolean receiveElection(){
+         String payload = electionsList.get(0).getPayload();
+         if(payload.equals("election")){
+             return true;
+         }
+        return false;
+    }
+
     public void handleReceivedElection(ElectionDTO electionDTO){
         if(electionDTO.getMessage()!= null){
             electionsList.add(electionDTO);

@@ -162,13 +162,19 @@ public class HeroService {
             }
         });
 
-
-        post("/adventures/election",(req,res)->{
+        post("/election",(req,res)->{
             res.type("application/json");
             ElectionDTO electionDTO = new Gson().fromJson(req.body(),ElectionDTO.class);
             hiringAndAssignmentController.handleReceivedElection(electionDTO);
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
+
+        get("/election",(req,res)->{
+            res.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(hiringAndAssignmentController.receiveElection())));
+        });
+
+
 
     }
 }
