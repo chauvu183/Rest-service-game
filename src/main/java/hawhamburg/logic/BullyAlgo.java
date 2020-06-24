@@ -57,11 +57,11 @@ public class BullyAlgo {
         // broadcast election to all greaterIdMembers
         else {
             for (final Adventurer greaterMember : greaterIdMembers) {
-                System.out.println("Member: "+ sourceMember.getId() +" sending election request to " +
-                        greaterMember.getId());
-                 sendElection(greaterMember);
                 try {
-                    //Response response = transport.dispatchTo(greaterMember, electionRequest);
+                          System.out.println("Member: "+ sourceMember.getId() +" sending election request to " +
+                                  greaterMember.getId());
+                           sendElection(greaterMember);
+                    
                 } catch (Exception problem) {
                     System.out.println("Problem encountered dispatching election rqequest to member: " +
                             greaterMember.getId() + " with "+ problem);
