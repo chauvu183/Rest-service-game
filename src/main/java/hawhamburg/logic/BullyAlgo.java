@@ -3,7 +3,7 @@ package hawhamburg.logic;
 import com.google.gson.Gson;
 import hawhamburg.RestHelper;
 import hawhamburg.entities.adventure.Adventurer;
-import hawhamburg.entities.group.AdventurerGroup;
+import hawhamburg.entities.group.ElectionGroup;
 import hawhamburg.entities.group.ElectionDTO;
 import hawhamburg.entities.group.JobDTO;
 import hawhamburg.entities.group.Status;
@@ -11,22 +11,22 @@ import hawhamburg.entities.group.Status;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BullyAlgo {
 
     RestHelper restHelperBlackboard = new RestHelper();
 
     Gson gson = new Gson();
-    public AdventurerGroup memberGroup;
+    public ElectionGroup memberGroup;
     public Adventurer sourceMember;
     private final AtomicReference<Adventurer> electedLeader = new AtomicReference<>();
 
     private final AtomicBoolean running = new AtomicBoolean();
 
-    public BullyAlgo(Adventurer sourceMember) {
+    public BullyAlgo(ElectionGroup memberGroup, Adventurer sourceMember) {
+        this.memberGroup = memberGroup;
         this.sourceMember = sourceMember;
+         running.compareAndSet(false, true);
     }
 
     public synchronized void electCoordinator() throws Exception {

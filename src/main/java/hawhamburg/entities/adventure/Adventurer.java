@@ -14,13 +14,14 @@ public class Adventurer  implements Comparable<Adventurer>{
 	private String user;
 	private String group;
 	private String id;
-
 	private Status status;
+
 	String IPADDRESS_PATTERN = "^https?://\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d{1,5})?";
 
 	public Adventurer() {
 		this.id = UUID.randomUUID().toString();
 	}
+
 
 	public String getId() {
 		return id;

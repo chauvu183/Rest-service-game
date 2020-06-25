@@ -10,9 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class AdventurerGroup {
-
-
+public class ElectionGroup {
     private final List<Adventurer> members = new CopyOnWriteArrayList<>();
     private int id;
     private AtomicReference<Adventurer> leader = new AtomicReference<>();
@@ -25,6 +23,9 @@ public class AdventurerGroup {
             success = true;
         }
         return success;
+    }
+    public void addMember(Adventurer adventurer){
+        members.add(adventurer);
     }
 
     public Adventurer getLeader() {

@@ -19,7 +19,6 @@ import hawhamburg.entities.group.*;
 import hawhamburg.logic.BullyAlgo;
 import hawhamburg.service.HeroService;
 import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
@@ -371,6 +370,7 @@ public class GameController {
         String heroclass = null;
         Adventurer adventurer = null;
         JsonNode adventurerRequest = restHelperBlackboard.sendGet("/taverna/adventurers/"+ user.name);
+
         if(adventurerRequest.getObject().getString("status").equals( "error")){
                 System.out.println("\nYou haven't registered as an adventurer.");
                 System.out.println("Firstly please subscribe yourself with a Hero class");
@@ -434,8 +434,29 @@ public class GameController {
         }
     }
 
-    private void election(Adventurer adventurer) throws Exception {
-        BullyAlgo bullyAlgo = new BullyAlgo(adventurer);
+    private void election(Adventurer member) throws Exception {
+	    member.setStatus(Status.ALIVE);
+	    ElectionGroup electionGroup = new ElectionGroup();
+        String groupID = member.getGroup();
+        // Access to old Group and add to adventure Group
+        if(groupID != null){
+            JsonNode groupRequest = restHelperBlackboard.sendGet("/taverna/groups/" + groupID);
+            String groupString = groupRequest.getObject().getJSONObject("object").toString();
+            Group group = gson.fromJson(groupString, Group.class);
+            System.out.println("Your Group ID is " + groupID);
+            System.out.println("There are " + group.getMembers().length +" members in your group.\n");
+            System.out.println("Here are member names: ");
+            for(int x = 0; x < group.getMembers().length; x++){
+                System.out.println(group.getMembers()[x] );
+                JsonNode memberRequest = restHelperBlackboard.sendGet("/taverna/adventurers/"+ group.getMembers()[x] );
+                String memberString = memberRequest.getObject().getJSONObject("object").toString();
+                Adventurer electionMember = gson.fromJson(memberString, Adventurer.class);
+                electionMember.setStatus(Status.ALIVE);
+                electionGroup.addMember(electionMember);
+            }
+        }
+        System.out.println(electionGroup.allMembers());
+        BullyAlgo bullyAlgo = new BullyAlgo(electionGroup,member);
         bullyAlgo.electCoordinator();
     }
 
@@ -462,47 +483,52 @@ public class GameController {
         System.out.println("WELCOME BACK TO YOUR GROUP IN TAVERNA \n");
         String groupID = adventurer.getGroup();
         // Access to old Group and see the assignments
-        JsonNode groupRequest = restHelperBlackboard.sendGet("/taverna/groups/" + groupID);
-        String groupString = groupRequest.getObject().getJSONObject("object").toString();
-        Group group = gson.fromJson(groupString, Group.class);
-        System.out.println("Your Group ID is " + groupID);
-        System.out.println("There are " + group.getMembers().length +" members in your group.\n");
-        System.out.println("Here are member names: ");
-        for(int x = 0; x < group.getMembers().length; x++){
-            System.out.println(group.getMembers()[x] );
-        }
-        boolean giveTasksDone = true;
-        if(group.getOwner().equals(user.name)){
-            user.setOwnerOfGroup(group);
-            System.out.println("You are the owner of this group.");
-            System.out.println("As a group owner you can assign tasks for your member or hiring other member\n");
-            if(group.getMembers().length > 1){
-                System.out.println(" You must choose...");
-                System.out.println("\t1) Hiring");
-                System.out.println("\t2) Give assignment");
-                playerChoice = ' ';
-                while(playerChoice != '1' && playerChoice != '2' ) {
-                    playerChoice = userInput.next().charAt(0);
-                    if(playerChoice != '1' && playerChoice != '2' )
-                        System.out.println("\nPlease enter '1', '2'");
-                }
-                switch (playerChoice){
-                    case '1':{
-                       createHirings();
-                    }break;
-                    case '2':{
-                        giveAssignment(giveTasksDone);
-                    }break;
-                }
-
-            }else{
-                System.out.println("You are the only member in this group.\n"
-                        +"Wait for other to join or create Hiring\n");
-                createHirings();
-
+        if(groupID != null){
+            JsonNode groupRequest = restHelperBlackboard.sendGet("/taverna/groups/" + groupID);
+            String groupString = groupRequest.getObject().getJSONObject("object").toString();
+            Group group = gson.fromJson(groupString, Group.class);
+            System.out.println("Your Group ID is " + groupID);
+            System.out.println("There are " + group.getMembers().length +" members in your group.\n");
+            System.out.println("Here are member names: ");
+            for(int x = 0; x < group.getMembers().length; x++){
+                System.out.println(group.getMembers()[x] );
             }
+            boolean giveTasksDone = true;
+            if(group.getOwner().equals(user.name)){
+                user.setOwnerOfGroup(group);
+                System.out.println("You are the owner of this group.");
+                System.out.println("As a group owner you can assign tasks for your member or hiring other member\n");
+                if(group.getMembers().length > 1){
+                    System.out.println(" You must choose...");
+                    System.out.println("\t1) Hiring");
+                    System.out.println("\t2) Give assignment");
+                    playerChoice = ' ';
+                    while(playerChoice != '1' && playerChoice != '2' ) {
+                        playerChoice = userInput.next().charAt(0);
+                        if(playerChoice != '1' && playerChoice != '2' )
+                            System.out.println("\nPlease enter '1', '2'");
+                    }
+                    switch (playerChoice){
+                        case '1':{
+                            createHirings();
+                        }break;
+                        case '2':{
+                            giveAssignment(giveTasksDone);
+                        }break;
+                    }
+
+                }else{
+                    System.out.println("You are the only member in this group.\n"
+                            +"Wait for other to join or create Hiring\n");
+                    createHirings();
+
+                }
+            }else{
+                receiveAssignment(adventurer);
+            }
+
         }else{
-            receiveAssignment(adventurer);
+            System.out.println("You havent registered in any group");
         }
 
     }
