@@ -60,16 +60,29 @@ public class BullyAlgo {
 
         // broadcast election to all greaterIdMembers
         else {
+             int antworten = 0;
+             
             for (final Adventurer greaterMember : greaterIdMembers) {
                 try {
                           System.out.println("Member: "+ sourceMember.getId() +" sending election request to " +
                                   greaterMember.getId());
                            sendElection(greaterMember);
-                    
+                           antworten++;
                 } catch (Exception problem) {
                     System.out.println("Problem encountered dispatching election rqequest to member: " +
                             greaterMember.getId() + " with "+ problem);
                 }
+            }
+            if(antworten == 0){
+                       coordinator = sourceMember;
+                       memberGroup.setLeader(coordinator);
+                       for (final Adventurer member : memberGroup.otherMembers(sourceMember)) {
+                           System.out.println("Announcing leader:"+ coordinator.getId() +" to "+ member.getId());
+                           //declare victory
+                           sendVictory(member);
+                       }
+                       electedLeader.set(coordinator);
+                       System.out.println("Elected leader:" + coordinator.getId());
             }
         }
     }

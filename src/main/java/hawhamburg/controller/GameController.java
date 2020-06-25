@@ -438,7 +438,7 @@ public class GameController {
 	    member.setStatus(Status.ALIVE);
 	    ElectionGroup electionGroup = new ElectionGroup();
         String groupID = member.getGroup();
-        // Access to old Group and add to adventure Group
+        // Access to old Group and add to election Group
         if(groupID != null){
             JsonNode groupRequest = restHelperBlackboard.sendGet("/taverna/groups/" + groupID);
             String groupString = groupRequest.getObject().getJSONObject("object").toString();
@@ -572,8 +572,10 @@ public class GameController {
         sleep();
         JsonNode assignmentUrlNode = restHelperBlackboard.get(adventurer.getUrl());
         String assignmentUrlString = assignmentUrlNode.getObject().getString("assignments");
+
         JsonNode receivedAssignmentNode = restHelperBlackboard.get(assignmentUrlString);
         String receivedAssignmentString = receivedAssignmentNode.getObject().toString();
+
         Assignment receivedAssignment = gson.fromJson(receivedAssignmentString, Assignment.class);
         System.out.println("Do you want to see your assignment?");
         getUserInput();
