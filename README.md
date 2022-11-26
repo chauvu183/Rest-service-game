@@ -102,5 +102,6 @@ Go and kill some rats
 
 ## Built With
 
-* [UniRest](http://kong.github.io/unirest-java/) - The RESTApi framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
+* [Sprak REST](https://sparkjava.com/) - The used RESTApi framework
+* [Maven](https://maven.apache.org/) - Build and Dependency Manager
+* [Gson] - Json Manager
